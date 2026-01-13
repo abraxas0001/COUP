@@ -63,9 +63,6 @@ export default function Lobby() {
       navigate('/')
     }
   }, [playerName, navigate])
-  
-  const [copied, setCopied] = useState(false)
-  const [starting, setStarting] = useState(false)
 
   // Redirect to game when it starts
   useEffect(() => {
