@@ -1,7 +1,7 @@
 import { create } from 'zustand'
 import { io } from 'socket.io-client'
 
-const SOCKET_URL = import.meta.env.PROD ? '' : 'http://localhost:3001'
+const SOCKET_URL = import.meta.env.VITE_API_URL || 'https://coup-erky.onrender.com'
 
 export const useGameStore = create((set, get) => ({
   // Socket connection

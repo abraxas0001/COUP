@@ -16,8 +16,11 @@ const httpServer = createServer(app);
 const io = new Server(httpServer, {
   cors: {
     origin: process.env.NODE_ENV === 'production' 
-      ? false 
-      : ['http://localhost:5173', 'http://127.0.0.1:5173'],
+      ? [
+          'https://coup-erky.onrender.com',
+          /\.vercel\.app$/  // Allow all Vercel deployments
+        ]
+      : ['http://localhost:5173', 'http://127.0.0.1:5173', 'http://localhost:3000'],
     methods: ['GET', 'POST'],
     credentials: true
   }
