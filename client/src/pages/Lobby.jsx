@@ -9,7 +9,8 @@ import {
   Play, 
   LogOut,
   User,
-  Loader2
+  Loader2,
+  AlertCircle
 } from 'lucide-react'
 import { useGameStore } from '../store/gameStore'
 import Logo from '../components/Logo'
@@ -22,13 +23,46 @@ export default function Lobby() {
     lobby, 
     gameState,
     playerName,
+    avatarId,
     toggleReady, 
     startGame, 
     leaveLobby,
+    joinLobby,
     socket,
+    isConnected,
     isLoading,
     error
   } = useGameStore()
+  
+  const [copied, setCopied] = useState(false)
+  const [starting, setStarting] = useState(false)
+  const [joinError, setJoinError] = useState(null)
+  const [isJoining, setIsJoining] = useState(false)
+
+  // Try to join lobby if we don't have lobby data
+  useEffect(() => {
+    if (!lobby && lobbyCode && isConnected && playerName && !isJoining) {
+      setIsJoining(true)
+      console.log('🔄 Attempting to join lobby:', lobbyCode)
+      joinLobby(lobbyCode)
+        .then(() => {
+          console.log('✅ Joined lobby successfully')
+          setIsJoining(false)
+        })
+        .catch((err) => {
+          console.error('❌ Failed to join lobby:', err)
+          setJoinError(err.message || 'Failed to join lobby')
+          setIsJoining(false)
+        })
+    }
+  }, [lobby, lobbyCode, isConnected, playerName, joinLobby, isJoining])
+
+  // Redirect to home if no player name
+  useEffect(() => {
+    if (!playerName) {
+      navigate('/')
+    }
+  }, [playerName, navigate])
   
   const [copied, setCopied] = useState(false)
   const [starting, setStarting] = useState(false)
@@ -71,12 +105,33 @@ export default function Lobby() {
   const currentPlayer = lobby?.players.find(p => p.id === socket?.id)
   const isHost = currentPlayer?.isHost
 
+  // Show error if join failed
+  if (joinError) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="text-center glass border border-red-500/30 rounded-xl p-8 max-w-md">
+          <AlertCircle className="w-12 h-12 text-red-400 mx-auto mb-4" />
+          <h2 className="text-xl font-display text-red-400 mb-2">Unable to Join Lobby</h2>
+          <p className="text-gray-400 mb-6">{joinError}</p>
+          <button
+            onClick={() => navigate('/')}
+            className="btn-primary"
+          >
+            Back to Home
+          </button>
+        </div>
+      </div>
+    )
+  }
+
   if (!lobby) {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="text-center">
           <Loader2 className="w-12 h-12 text-coup-gold animate-spin mx-auto mb-4" />
-          <p className="text-gray-400">Loading lobby...</p>
+          <p className="text-gray-400">
+            {!isConnected ? 'Connecting to server...' : 'Loading lobby...'}
+          </p>
         </div>
       </div>
     )
