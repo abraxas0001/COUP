@@ -100,16 +100,23 @@ export const useGameStore = create((set, get) => ({
   createLobby: () => {
     return new Promise((resolve, reject) => {
       const { socket, playerName, avatarId } = get()
-      if (!socket) return reject(new Error('Not connected'))
+      if (!socket) {
+        console.error('❌ Cannot create lobby: No socket connection')
+        return reject(new Error('Not connected'))
+      }
       
+      console.log('📤 Creating lobby...', { playerName, avatarId })
       set({ isLoading: true, error: null })
       
       socket.emit('createLobby', { playerName, avatarId }, (response) => {
+        console.log('📥 Create lobby response:', response)
         set({ isLoading: false })
         if (response.success) {
+          console.log('✅ Lobby created:', response.lobby)
           set({ lobby: response.lobby })
           resolve(response.lobby)
         } else {
+          console.error('❌ Create lobby failed:', response.error)
           set({ error: response.error })
           reject(new Error(response.error))
         }
@@ -120,16 +127,23 @@ export const useGameStore = create((set, get) => ({
   joinLobby: (lobbyCode) => {
     return new Promise((resolve, reject) => {
       const { socket, playerName, avatarId } = get()
-      if (!socket) return reject(new Error('Not connected'))
+      if (!socket) {
+        console.error('❌ Cannot join lobby: No socket connection')
+        return reject(new Error('Not connected'))
+      }
       
+      console.log('📤 Joining lobby...', { lobbyCode, playerName, avatarId })
       set({ isLoading: true, error: null })
       
       socket.emit('joinLobby', { lobbyCode, playerName, avatarId }, (response) => {
+        console.log('📥 Join lobby response:', response)
         set({ isLoading: false })
         if (response.success) {
+          console.log('✅ Joined lobby:', response.lobby)
           set({ lobby: response.lobby })
           resolve(response.lobby)
         } else {
+          console.error('❌ Join lobby failed:', response.error)
           set({ error: response.error })
           reject(new Error(response.error))
         }
