@@ -3,6 +3,8 @@ import { io } from 'socket.io-client'
 
 const SOCKET_URL = import.meta.env.VITE_API_URL || 'https://coup-erky.onrender.com'
 
+console.log('🔌 Connecting to Socket.io at:', SOCKET_URL)
+
 export const useGameStore = create((set, get) => ({
   // Socket connection
   socket: null,
@@ -29,23 +31,25 @@ export const useGameStore = create((set, get) => ({
     const socket = io(SOCKET_URL, {
       transports: ['websocket', 'polling'],
       reconnection: true,
-      reconnectionAttempts: 5,
+      reconnectionAttempts: 10,
       reconnectionDelay: 1000,
+      reconnectionDelayMax: 5000,
+      timeout: 10000,
     })
     
     socket.on('connect', () => {
-      console.log('Connected to server')
-      set({ isConnected: true })
+      console.log('✅ Connected to server')
+      set({ isConnected: true, error: null })
     })
     
     socket.on('disconnect', () => {
-      console.log('Disconnected from server')
+      console.log('❌ Disconnected from server')
       set({ isConnected: false })
     })
     
     socket.on('connect_error', (error) => {
-      console.error('Connection error:', error)
-      set({ error: 'Failed to connect to server' })
+      console.error('⚠️ Connection error:', error)
+      set({ error: 'Failed to connect to server. Backend may be starting up...' })
     })
     
     // Lobby events
