@@ -361,12 +361,19 @@ export class Game {
       return { success: false, error: 'Invalid challenger' };
     }
     
-    if (challenger.id === actingPlayer.id) {
+    // In AWAITING_CHALLENGE phase, the acting player cannot challenge their own action
+    // In AWAITING_BLOCK_CHALLENGE phase, the acting player CAN challenge the blocker
+    if (this.phase === GAME_PHASES.AWAITING_CHALLENGE && challenger.id === actingPlayer.id) {
       return { success: false, error: 'Cannot challenge yourself' };
     }
     
     if (this.phase !== GAME_PHASES.AWAITING_CHALLENGE && this.phase !== GAME_PHASES.AWAITING_BLOCK_CHALLENGE) {
       return { success: false, error: 'Cannot challenge in current phase' };
+    }
+    
+    // In AWAITING_BLOCK_CHALLENGE, blocker cannot challenge their own block
+    if (this.phase === GAME_PHASES.AWAITING_BLOCK_CHALLENGE && challenger.id === this.blockingPlayer) {
+      return { success: false, error: 'Blocker cannot challenge their own block' };
     }
     
     this.challengingPlayer = challengerId;
@@ -476,19 +483,20 @@ export class Game {
     const player = this.getPlayer(playerId);
     
     if (!player || player.isEliminated) return false;
-    if (playerId === this.getCurrentPlayer()?.id) return false;
     if (this.playersAllowed.has(playerId)) return false;
     
     const actionInfo = ACTION_INFO[this.currentAction];
     
     if (this.phase === GAME_PHASES.AWAITING_CHALLENGE) {
       // All players except acting player can allow during challenge phase
+      if (playerId === this.getCurrentPlayer()?.id) return false;
       return actionInfo?.canBeChallenged === true;
     }
     
     if (this.phase === GAME_PHASES.AWAITING_BLOCK) {
-      // For Foreign Aid: All players can respond
+      // For Foreign Aid: All players except current can respond
       // For targeted actions: Only target can respond
+      if (playerId === this.getCurrentPlayer()?.id) return false;
       if (this.currentAction === ACTIONS.FOREIGN_AID) {
         return true;
       }
@@ -499,7 +507,7 @@ export class Game {
     }
     
     if (this.phase === GAME_PHASES.AWAITING_BLOCK_CHALLENGE) {
-      // All players except blocker can allow
+      // All players except blocker can allow (INCLUDING the current player whose action is being blocked)
       return playerId !== this.blockingPlayer;
     }
     
@@ -531,8 +539,8 @@ export class Game {
     }
     
     if (this.phase === GAME_PHASES.AWAITING_BLOCK_CHALLENGE) {
-      // All alive players except current player and blocker
-      return alivePlayers.filter(p => p.id !== currentPlayerId && p.id !== this.blockingPlayer);
+      // All alive players except blocker (current player CAN challenge/allow a block against their action)
+      return alivePlayers.filter(p => p.id !== this.blockingPlayer);
     }
     
     return [];
@@ -546,7 +554,8 @@ export class Game {
       return { success: false, error: 'Invalid player' };
     }
     
-    if (player.id === this.getCurrentPlayer().id) {
+    // Current player can only allow during AWAITING_BLOCK_CHALLENGE (to allow a block against their action)
+    if (player.id === this.getCurrentPlayer().id && this.phase !== GAME_PHASES.AWAITING_BLOCK_CHALLENGE) {
       return { success: false, error: 'Current player cannot allow' };
     }
     
@@ -826,13 +835,14 @@ export class Game {
     let canBlock = false;
     let blockOptions = [];
     
-    if (player && !player.isEliminated && playerId !== this.getCurrentPlayer()?.id) {
+    if (player && !player.isEliminated) {
       const actionInfo = ACTION_INFO[this.currentAction];
       
       // CHALLENGE LOGIC:
-      // 1. In AWAITING_CHALLENGE phase: Can challenge if action is challengeable
-      // 2. In AWAITING_BLOCK_CHALLENGE phase: Can challenge blocker (except if you ARE the blocker)
+      // 1. In AWAITING_CHALLENGE phase: Can challenge if action is challengeable (not current player)
+      // 2. In AWAITING_BLOCK_CHALLENGE phase: Can challenge blocker (anyone except the blocker, INCLUDING the current player)
       if (this.phase === GAME_PHASES.AWAITING_CHALLENGE && 
+          playerId !== this.getCurrentPlayer()?.id &&
           !this.playersAllowed.has(playerId) &&
           actionInfo?.canBeChallenged) {
         canChallenge = true;

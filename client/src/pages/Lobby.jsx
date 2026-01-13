@@ -57,12 +57,14 @@ export default function Lobby() {
     }
   }, [lobby, lobbyCode, isConnected, playerName, joinLobby, isJoining])
 
-  // Redirect to home if no player name
+  // Redirect to home if no player name - but preserve the lobby code as return destination
   useEffect(() => {
-    if (!playerName) {
+    if (!playerName && lobbyCode) {
+      // Store the intended lobby code so user can be redirected back after entering name
+      localStorage.setItem('pendingLobbyCode', lobbyCode)
       navigate('/')
     }
-  }, [playerName, navigate])
+  }, [playerName, navigate, lobbyCode])
 
   // Redirect to game when it starts
   useEffect(() => {

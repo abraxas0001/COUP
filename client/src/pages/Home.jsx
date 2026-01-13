@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useNavigate, Link } from 'react-router-dom'
 import { motion } from 'framer-motion'
 import { Crown, Users, BookOpen, Sparkles, ChevronRight } from 'lucide-react'
@@ -26,6 +26,16 @@ export default function Home() {
   const [showCreateModal, setShowCreateModal] = useState(false)
   const [lobbyCode, setLobbyCode] = useState('')
   const [tempName, setTempName] = useState(playerName)
+  
+  // Check for pending lobby code (from direct link redirect)
+  useEffect(() => {
+    const pendingLobbyCode = localStorage.getItem('pendingLobbyCode')
+    if (pendingLobbyCode) {
+      setLobbyCode(pendingLobbyCode)
+      setShowJoinModal(true)
+      localStorage.removeItem('pendingLobbyCode')
+    }
+  }, [])
 
   const handleCreateLobby = async () => {
     if (!tempName.trim()) return
