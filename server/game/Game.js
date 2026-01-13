@@ -471,6 +471,73 @@ export class Game {
     return { success: true };
   }
 
+  // Check if a player can allow the current action/block
+  canPlayerAllow(playerId) {
+    const player = this.getPlayer(playerId);
+    
+    if (!player || player.isEliminated) return false;
+    if (playerId === this.getCurrentPlayer()?.id) return false;
+    if (this.playersAllowed.has(playerId)) return false;
+    
+    const actionInfo = ACTION_INFO[this.currentAction];
+    
+    if (this.phase === GAME_PHASES.AWAITING_CHALLENGE) {
+      // All players except acting player can allow during challenge phase
+      return actionInfo?.canBeChallenged === true;
+    }
+    
+    if (this.phase === GAME_PHASES.AWAITING_BLOCK) {
+      // For Foreign Aid: All players can respond
+      // For targeted actions: Only target can respond
+      if (this.currentAction === ACTIONS.FOREIGN_AID) {
+        return true;
+      }
+      if (actionInfo?.requiresTarget) {
+        return this.currentTarget === playerId;
+      }
+      return false;
+    }
+    
+    if (this.phase === GAME_PHASES.AWAITING_BLOCK_CHALLENGE) {
+      // All players except blocker can allow
+      return playerId !== this.blockingPlayer;
+    }
+    
+    return false;
+  }
+
+  // Get list of players who need to respond in current phase
+  getPlayersWhoNeedToRespond() {
+    const alivePlayers = this.getAlivePlayers();
+    const currentPlayerId = this.getCurrentPlayer()?.id;
+    const actionInfo = ACTION_INFO[this.currentAction];
+    
+    if (this.phase === GAME_PHASES.AWAITING_CHALLENGE) {
+      // All alive players except current player
+      return alivePlayers.filter(p => p.id !== currentPlayerId);
+    }
+    
+    if (this.phase === GAME_PHASES.AWAITING_BLOCK) {
+      // For Foreign Aid: All players except current
+      // For targeted actions: Only the target
+      if (this.currentAction === ACTIONS.FOREIGN_AID) {
+        return alivePlayers.filter(p => p.id !== currentPlayerId);
+      }
+      if (actionInfo?.requiresTarget && this.currentTarget) {
+        const target = this.getPlayer(this.currentTarget);
+        return target && !target.isEliminated ? [target] : [];
+      }
+      return [];
+    }
+    
+    if (this.phase === GAME_PHASES.AWAITING_BLOCK_CHALLENGE) {
+      // All alive players except current player and blocker
+      return alivePlayers.filter(p => p.id !== currentPlayerId && p.id !== this.blockingPlayer);
+    }
+    
+    return [];
+  }
+
   // Handle allowing an action (not challenging or blocking)
   processAllow(playerId) {
     const player = this.getPlayer(playerId);
@@ -483,18 +550,15 @@ export class Game {
       return { success: false, error: 'Current player cannot allow' };
     }
     
-    this.playersAllowed.add(playerId);
-    
-    // Check if all alive players (except current) have allowed
-    const alivePlayers = this.getAlivePlayers();
-    const otherPlayers = alivePlayers.filter(p => p.id !== this.getCurrentPlayer().id);
-    
-    // For block challenges, exclude the blocking player
-    let playersWhoNeedToRespond = otherPlayers;
-    if (this.phase === GAME_PHASES.AWAITING_BLOCK_CHALLENGE) {
-      playersWhoNeedToRespond = otherPlayers.filter(p => p.id !== this.blockingPlayer);
+    // Verify this player can allow in current phase
+    if (!this.canPlayerAllow(playerId)) {
+      return { success: false, error: 'You cannot allow in this phase' };
     }
     
+    this.playersAllowed.add(playerId);
+    
+    // Use the new method to get correct list of players who need to respond
+    const playersWhoNeedToRespond = this.getPlayersWhoNeedToRespond();
     const allAllowed = playersWhoNeedToRespond.every(p => this.playersAllowed.has(p.id));
     
     if (allAllowed) {
@@ -763,7 +827,14 @@ export class Game {
     let blockOptions = [];
     
     if (player && !player.isEliminated && playerId !== this.getCurrentPlayer()?.id) {
-      if (this.phase === GAME_PHASES.AWAITING_CHALLENGE && !this.playersAllowed.has(playerId)) {
+      const actionInfo = ACTION_INFO[this.currentAction];
+      
+      // CHALLENGE LOGIC:
+      // 1. In AWAITING_CHALLENGE phase: Can challenge if action is challengeable
+      // 2. In AWAITING_BLOCK_CHALLENGE phase: Can challenge blocker (except if you ARE the blocker)
+      if (this.phase === GAME_PHASES.AWAITING_CHALLENGE && 
+          !this.playersAllowed.has(playerId) &&
+          actionInfo?.canBeChallenged) {
         canChallenge = true;
       }
       
@@ -773,19 +844,21 @@ export class Game {
         canChallenge = true;
       }
       
-      if (this.phase === GAME_PHASES.AWAITING_BLOCK || 
-          (this.phase === GAME_PHASES.AWAITING_CHALLENGE && ACTION_INFO[this.currentAction]?.canBeBlocked)) {
-        const actionInfo = ACTION_INFO[this.currentAction];
-        // Check if this player can block (target or anyone for Foreign Aid)
+      // BLOCK LOGIC:
+      // Blocking happens in AWAITING_BLOCK phase (after challenge window closes)
+      // 1. Foreign Aid: ANY player can block with Duke
+      // 2. Steal: ONLY the target can block with Captain or Ambassador  
+      // 3. Assassinate: ONLY the target can block with Contessa
+      if (this.phase === GAME_PHASES.AWAITING_BLOCK && !this.playersAllowed.has(playerId)) {
         if (actionInfo?.canBeBlocked) {
-          if (!actionInfo.requiresTarget || this.currentTarget === playerId) {
-            canBlock = true;
-            blockOptions = actionInfo.blockedBy;
-          }
-          // Anyone can block Foreign Aid with Duke
           if (this.currentAction === ACTIONS.FOREIGN_AID) {
+            // Anyone can block Foreign Aid with Duke
             canBlock = true;
             blockOptions = [CHARACTERS.DUKE];
+          } else if (actionInfo.requiresTarget && this.currentTarget === playerId) {
+            // Only target can block targeted actions (Steal, Assassinate)
+            canBlock = true;
+            blockOptions = actionInfo.blockedBy;
           }
         }
       }
@@ -820,12 +893,7 @@ export class Game {
       canChallenge,
       canBlock,
       blockOptions,
-      canAllow: (this.phase === GAME_PHASES.AWAITING_CHALLENGE || 
-                 this.phase === GAME_PHASES.AWAITING_BLOCK ||
-                 this.phase === GAME_PHASES.AWAITING_BLOCK_CHALLENGE) &&
-                playerId !== this.getCurrentPlayer()?.id &&
-                playerId !== this.blockingPlayer &&
-                !this.playersAllowed.has(playerId),
+      canAllow: this.canPlayerAllow(playerId),
       
       // Game log (last 20 entries)
       gameLog: this.gameLog.slice(-20),
