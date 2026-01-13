@@ -29,6 +29,20 @@ const io = new Server(httpServer, {
 app.use(cors());
 app.use(express.json());
 
+// Health check endpoint
+app.get('/health', (req, res) => {
+  res.json({ status: 'ok', message: 'Coup server is running' });
+});
+
+// Root endpoint
+app.get('/', (req, res) => {
+  res.json({ 
+    message: '🎭 Coup Multiplayer Game Server',
+    version: '1.0.0',
+    socketio: 'Connected via Socket.io'
+  });
+});
+
 // Serve static files in production
 if (process.env.NODE_ENV === 'production') {
   app.use(express.static(path.join(__dirname, '../client/dist')));
