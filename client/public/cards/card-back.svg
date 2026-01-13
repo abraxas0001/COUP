@@ -1,0 +1,103 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 280">
+  <defs>
+    <linearGradient id="cardBackBg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#1a1a2e"/>
+      <stop offset="50%" style="stop-color:#16213e"/>
+      <stop offset="100%" style="stop-color:#0f0f1a"/>
+    </linearGradient>
+    <linearGradient id="cardBackAccent" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#ffd700"/>
+      <stop offset="50%" style="stop-color:#d4af37"/>
+      <stop offset="100%" style="stop-color:#b8860b"/>
+    </linearGradient>
+    <linearGradient id="dukeColor" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" style="stop-color:#8e44ad"/>
+      <stop offset="100%" style="stop-color:#9b59b6"/>
+    </linearGradient>
+    <linearGradient id="assassinColor" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" style="stop-color:#2c3e50"/>
+      <stop offset="100%" style="stop-color:#34495e"/>
+    </linearGradient>
+    <linearGradient id="captainColor" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" style="stop-color:#2980b9"/>
+      <stop offset="100%" style="stop-color:#3498db"/>
+    </linearGradient>
+    <linearGradient id="ambassadorColor" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" style="stop-color:#27ae60"/>
+      <stop offset="100%" style="stop-color:#2ecc71"/>
+    </linearGradient>
+    <linearGradient id="contessaColor" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" style="stop-color:#c0392b"/>
+      <stop offset="100%" style="stop-color:#e74c3c"/>
+    </linearGradient>
+    <filter id="cardBackShadow">
+      <feDropShadow dx="0" dy="0" stdDeviation="3" flood-color="#ffd700" flood-opacity="0.4"/>
+    </filter>
+  </defs>
+  
+  <!-- Background -->
+  <rect width="200" height="280" rx="12" fill="url(#cardBackBg)"/>
+  
+  <!-- Decorative border -->
+  <rect x="6" y="6" width="188" height="268" rx="10" fill="none" stroke="url(#cardBackAccent)" stroke-width="1.5" opacity="0.6"/>
+  <rect x="10" y="10" width="180" height="260" rx="8" fill="none" stroke="url(#cardBackAccent)" stroke-width="0.5" opacity="0.3"/>
+  
+  <!-- Title -->
+  <text x="100" y="28" text-anchor="middle" fill="url(#cardBackAccent)" font-family="Georgia, serif" font-size="18" font-weight="bold" letter-spacing="4" filter="url(#cardBackShadow)">COUP</text>
+  <line x1="30" y1="36" x2="170" y2="36" stroke="url(#cardBackAccent)" stroke-width="0.5" opacity="0.5"/>
+  
+  <!-- DUKE Section -->
+  <g transform="translate(15, 45)">
+    <rect x="0" y="0" width="170" height="38" rx="4" fill="url(#dukeColor)" opacity="0.9"/>
+    <text x="8" y="14" fill="#ffd700" font-family="Arial, sans-serif" font-size="10" font-weight="bold">DUKE</text>
+    <text x="8" y="24" fill="#fff" font-family="Arial, sans-serif" font-size="7">Action: Tax - Take 3 coins</text>
+    <text x="8" y="33" fill="#e0e0e0" font-family="Arial, sans-serif" font-size="6">Blocks: Foreign Aid</text>
+    <text x="165" y="22" text-anchor="end" fill="#ffd700" font-family="Arial, sans-serif" font-size="16">$$$</text>
+  </g>
+  
+  <!-- ASSASSIN Section -->
+  <g transform="translate(15, 87)">
+    <rect x="0" y="0" width="170" height="38" rx="4" fill="url(#assassinColor)" opacity="0.9"/>
+    <text x="8" y="14" fill="#bdc3c7" font-family="Arial, sans-serif" font-size="10" font-weight="bold">ASSASSIN</text>
+    <text x="8" y="24" fill="#fff" font-family="Arial, sans-serif" font-size="7">Action: Assassinate - Pay 3, kill influence</text>
+    <text x="8" y="33" fill="#e0e0e0" font-family="Arial, sans-serif" font-size="6">Blocked by: Contessa</text>
+    <text x="162" y="24" text-anchor="end" fill="#bdc3c7" font-family="Arial, sans-serif" font-size="18">🗡</text>
+  </g>
+  
+  <!-- CAPTAIN Section -->
+  <g transform="translate(15, 129)">
+    <rect x="0" y="0" width="170" height="38" rx="4" fill="url(#captainColor)" opacity="0.9"/>
+    <text x="8" y="14" fill="#5dade2" font-family="Arial, sans-serif" font-size="10" font-weight="bold">CAPTAIN</text>
+    <text x="8" y="24" fill="#fff" font-family="Arial, sans-serif" font-size="7">Action: Steal - Take 2 coins from player</text>
+    <text x="8" y="33" fill="#e0e0e0" font-family="Arial, sans-serif" font-size="6">Blocks: Stealing</text>
+    <text x="162" y="24" text-anchor="end" fill="#5dade2" font-family="Arial, sans-serif" font-size="16">⚓</text>
+  </g>
+  
+  <!-- AMBASSADOR Section -->
+  <g transform="translate(15, 171)">
+    <rect x="0" y="0" width="170" height="38" rx="4" fill="url(#ambassadorColor)" opacity="0.9"/>
+    <text x="8" y="14" fill="#f39c12" font-family="Arial, sans-serif" font-size="10" font-weight="bold">AMBASSADOR</text>
+    <text x="8" y="24" fill="#fff" font-family="Arial, sans-serif" font-size="7">Action: Exchange - Swap cards with deck</text>
+    <text x="8" y="33" fill="#e0e0e0" font-family="Arial, sans-serif" font-size="6">Blocks: Stealing</text>
+    <text x="162" y="24" text-anchor="end" fill="#f39c12" font-family="Arial, sans-serif" font-size="16">📜</text>
+  </g>
+  
+  <!-- CONTESSA Section -->
+  <g transform="translate(15, 213)">
+    <rect x="0" y="0" width="170" height="38" rx="4" fill="url(#contessaColor)" opacity="0.9"/>
+    <text x="8" y="14" fill="#e74c3c" font-family="Arial, sans-serif" font-size="10" font-weight="bold">CONTESSA</text>
+    <text x="8" y="24" fill="#fff" font-family="Arial, sans-serif" font-size="7">No Action</text>
+    <text x="8" y="33" fill="#e0e0e0" font-family="Arial, sans-serif" font-size="6">Blocks: Assassination</text>
+    <text x="162" y="24" text-anchor="end" fill="#e74c3c" font-family="Arial, sans-serif" font-size="16">👑</text>
+  </g>
+  
+  <!-- Footer -->
+  <line x1="30" y1="258" x2="170" y2="258" stroke="url(#cardBackAccent)" stroke-width="0.5" opacity="0.5"/>
+  <text x="100" y="271" text-anchor="middle" fill="url(#cardBackAccent)" font-family="Arial, sans-serif" font-size="7" opacity="0.8">Bluff • Challenge • Survive</text>
+  
+  <!-- Corner decorations -->
+  <path d="M15 20 L15 12 L23 12" fill="none" stroke="url(#cardBackAccent)" stroke-width="1.5" opacity="0.7"/>
+  <path d="M185 20 L185 12 L177 12" fill="none" stroke="url(#cardBackAccent)" stroke-width="1.5" opacity="0.7"/>
+  <path d="M15 260 L15 268 L23 268" fill="none" stroke="url(#cardBackAccent)" stroke-width="1.5" opacity="0.7"/>
+  <path d="M185 260 L185 268 L177 268" fill="none" stroke="url(#cardBackAccent)" stroke-width="1.5" opacity="0.7"/>
+</svg>

@@ -1,0 +1,232 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html, body, #root {
+  height: 100%;
+  width: 100%;
+}
+
+body {
+  background-color: #0D0D0D;
+  color: #ffffff;
+  font-family: 'Inter', sans-serif;
+  overflow-x: hidden;
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: #1A1A1A;
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: linear-gradient(180deg, #D4AF37 0%, #996515 100%);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(180deg, #F4D03F 0%, #D4AF37 100%);
+}
+
+/* Utility Classes */
+@layer utilities {
+  .text-gradient-gold {
+    @apply bg-gradient-to-r from-coup-gold via-coup-gold-light to-coup-gold bg-clip-text text-transparent;
+  }
+  
+  .border-gradient-gold {
+    border: 2px solid transparent;
+    background: linear-gradient(#0D0D0D, #0D0D0D) padding-box,
+                linear-gradient(135deg, #D4AF37, #F4D03F, #996515) border-box;
+  }
+  
+  .glass {
+    @apply bg-white/5 backdrop-blur-md;
+  }
+  
+  .card-shadow {
+    box-shadow: 
+      0 25px 50px -12px rgba(0, 0, 0, 0.5),
+      0 0 0 1px rgba(212, 175, 55, 0.1);
+  }
+}
+
+/* Font display class */
+.font-display {
+  font-family: 'Cinzel', serif;
+  letter-spacing: 0.05em;
+}
+
+/* Glow effects */
+.glow-gold {
+  box-shadow: 0 0 20px rgba(212, 175, 55, 0.4), 0 0 40px rgba(212, 175, 55, 0.2);
+}
+
+.glow-gold-intense {
+  box-shadow: 0 0 30px rgba(212, 175, 55, 0.6), 0 0 60px rgba(212, 175, 55, 0.3);
+}
+
+/* Button styles */
+.btn-primary {
+  @apply relative overflow-hidden px-8 py-3 font-display font-semibold text-coup-dark
+         bg-gradient-to-r from-coup-gold via-coup-gold-light to-coup-gold
+         rounded-lg transition-all duration-300 ease-out
+         hover:shadow-coup-hover hover:scale-105
+         active:scale-95;
+}
+
+.btn-primary::before {
+  content: '';
+  @apply absolute inset-0 bg-gradient-to-r from-transparent via-white/30 to-transparent
+         translate-x-[-100%] transition-transform duration-500;
+}
+
+.btn-primary:hover::before {
+  @apply translate-x-[100%];
+}
+
+.btn-secondary {
+  @apply px-6 py-3 font-display font-medium text-coup-gold
+         border-2 border-coup-gold/50 rounded-lg
+         transition-all duration-300 ease-out
+         hover:border-coup-gold hover:bg-coup-gold/10 hover:shadow-coup
+         active:scale-95;
+}
+
+.btn-danger {
+  @apply px-6 py-3 font-display font-medium text-red-400
+         border-2 border-red-400/50 rounded-lg
+         transition-all duration-300 ease-out
+         hover:border-red-400 hover:bg-red-400/10
+         active:scale-95;
+}
+
+/* Input styles */
+.input-primary {
+  @apply w-full px-4 py-3 bg-coup-gray border-2 border-coup-gray-light
+         rounded-lg text-white placeholder-gray-500
+         focus:outline-none focus:border-coup-gold focus:ring-2 focus:ring-coup-gold/20
+         transition-all duration-300;
+}
+
+/* Card flip animation */
+.card-container {
+  perspective: 1000px;
+}
+
+.card-inner {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  transition: transform 0.6s;
+  transform-style: preserve-3d;
+}
+
+.card-container.flipped .card-inner {
+  transform: rotateY(180deg);
+}
+
+.card-front, .card-back {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  backface-visibility: hidden;
+}
+
+.card-back {
+  transform: rotateY(180deg);
+}
+
+/* Animations */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-fadeIn {
+  animation: fadeIn 0.5s ease-out forwards;
+}
+
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateX(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+.animate-slideIn {
+  animation: slideIn 0.3s ease-out forwards;
+}
+
+@keyframes scaleIn {
+  from {
+    opacity: 0;
+    transform: scale(0.9);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.animate-scaleIn {
+  animation: scaleIn 0.3s ease-out forwards;
+}
+
+/* Particle background effect */
+.particles {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  overflow: hidden;
+  z-index: 0;
+}
+
+.particle {
+  position: absolute;
+  width: 4px;
+  height: 4px;
+  background: rgba(212, 175, 55, 0.3);
+  border-radius: 50%;
+  animation: float 10s infinite;
+}
+
+/* Game Table gradient */
+.game-table {
+  background: 
+    radial-gradient(ellipse at center, rgba(107, 63, 160, 0.15) 0%, transparent 50%),
+    radial-gradient(ellipse at bottom, rgba(212, 175, 55, 0.1) 0%, transparent 30%),
+    linear-gradient(180deg, #0D0D0D 0%, #1A1A1A 100%);
+}
+
+/* Character card backgrounds */
+.card-duke { background: linear-gradient(135deg, #9B59B6 0%, #6B3FA0 100%); }
+.card-assassin { background: linear-gradient(135deg, #4A5568 0%, #2C3E50 100%); }
+.card-captain { background: linear-gradient(135deg, #3498DB 0%, #2874A6 100%); }
+.card-ambassador { background: linear-gradient(135deg, #27AE60 0%, #1E8449 100%); }
+.card-contessa { background: linear-gradient(135deg, #E74C3C 0%, #C0392B 100%); }

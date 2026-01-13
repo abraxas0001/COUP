@@ -1,0 +1,104 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 280">
+  <defs>
+    <linearGradient id="contessaBg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#6b1a1a"/>
+      <stop offset="50%" style="stop-color:#4a1010"/>
+      <stop offset="100%" style="stop-color:#2d0a0a"/>
+    </linearGradient>
+    <linearGradient id="contessaAccent" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#e74c3c"/>
+      <stop offset="50%" style="stop-color:#c0392b"/>
+      <stop offset="100%" style="stop-color:#922b21"/>
+    </linearGradient>
+    <linearGradient id="contessaGlow" x1="50%" y1="0%" x2="50%" y2="100%">
+      <stop offset="0%" style="stop-color:#f1c40f;stop-opacity:0.3"/>
+      <stop offset="100%" style="stop-color:#6b1a1a;stop-opacity:0"/>
+    </linearGradient>
+    <linearGradient id="contessaSkin" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#fce4d6"/>
+      <stop offset="100%" style="stop-color:#e8c8b8"/>
+    </linearGradient>
+    <linearGradient id="contessaDress" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#c0392b"/>
+      <stop offset="50%" style="stop-color:#a93226"/>
+      <stop offset="100%" style="stop-color:#922b21"/>
+    </linearGradient>
+    <linearGradient id="fanGradient" x1="0%" y1="100%" x2="0%" y2="0%">
+      <stop offset="0%" style="stop-color:#8b4513"/>
+      <stop offset="30%" style="stop-color:#d4a574"/>
+      <stop offset="70%" style="stop-color:#f5deb3"/>
+      <stop offset="100%" style="stop-color:#d4a574"/>
+    </linearGradient>
+    <linearGradient id="goldAccent" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#ffd700"/>
+      <stop offset="100%" style="stop-color:#b8860b"/>
+    </linearGradient>
+    <filter id="contessaDropShadow">
+      <feDropShadow dx="0" dy="2" stdDeviation="3" flood-color="#e74c3c" flood-opacity="0.5"/>
+    </filter>
+  </defs>
+  
+  <rect width="200" height="280" rx="12" fill="url(#contessaBg)"/>
+  <g opacity="0.15" fill="#f1c40f">
+    <rect x="15" y="50" width="20" height="45"/>
+    <rect x="40" y="60" width="15" height="35"/>
+    <rect x="145" y="55" width="18" height="40"/>
+    <rect x="168" y="45" width="20" height="50"/>
+  </g>
+  <rect x="0" y="0" width="200" height="120" rx="12" fill="url(#contessaGlow)"/>
+  <rect x="8" y="8" width="184" height="264" rx="10" fill="none" stroke="url(#contessaAccent)" stroke-width="1" opacity="0.3"/>
+  
+  <g transform="translate(100, 95)" filter="url(#contessaDropShadow)">
+    <path d="M-35 90 Q-40 60 -30 40 L-22 32 Q0 28 22 32 L30 40 Q40 60 35 90 Z" fill="url(#contessaDress)" stroke="#922b21" stroke-width="1"/>
+    <path d="M-25 32 Q-30 15 -20 25 L-15 30" fill="#c0392b" stroke="#922b21" stroke-width="0.5"/>
+    <path d="M25 32 Q30 15 20 25 L15 30" fill="#c0392b" stroke="#922b21" stroke-width="0.5"/>
+    <path d="M-12 32 Q0 38 12 32" fill="none" stroke="#ffd700" stroke-width="1.5"/>
+    <circle cx="0" cy="36" r="4" fill="#ffd700"/>
+    <circle cx="0" cy="36" r="2" fill="#e74c3c"/>
+    <ellipse cx="0" cy="5" rx="18" ry="22" fill="url(#contessaSkin)"/>
+    <ellipse cx="0" cy="-12" rx="20" ry="16" fill="#8b4513"/>
+    <path d="M-18 -8 Q-20 -28 0 -26 Q20 -28 18 -8" fill="#a0522d"/>
+    <ellipse cx="0" cy="-20" rx="12" ry="8" fill="#8b4513"/>
+    <path d="M-17 -2 Q-22 3 -18 12" fill="none" stroke="#8b4513" stroke-width="3"/>
+    <path d="M17 -2 Q22 3 18 12" fill="none" stroke="#8b4513" stroke-width="3"/>
+    <ellipse cx="-7" cy="2" rx="4" ry="3" fill="#ecf0f1"/>
+    <circle cx="-6" cy="2" r="2.5" fill="#27ae60"/>
+    <ellipse cx="7" cy="2" rx="4" ry="3" fill="#ecf0f1"/>
+    <circle cx="8" cy="2" r="2.5" fill="#27ae60"/>
+    <path d="M-12 -2 Q-7 -4 -3 -2" stroke="#5d4037" stroke-width="1.5" fill="none"/>
+    <path d="M3 -2 Q7 -4 12 -2" stroke="#5d4037" stroke-width="1.5" fill="none"/>
+    <path d="M0 6 L-1 11 L1 11" fill="none" stroke="#d4a590" stroke-width="1.2"/>
+    <ellipse cx="0" cy="15" rx="5" ry="2.5" fill="#c0392b"/>
+    <ellipse cx="-16" cy="3" rx="3" ry="5" fill="url(#contessaSkin)"/>
+    <circle cx="-16" cy="8" r="2" fill="#ffd700"/>
+    <ellipse cx="16" cy="3" rx="3" ry="5" fill="url(#contessaSkin)"/>
+    <circle cx="16" cy="8" r="2" fill="#ffd700"/>
+    <g transform="translate(0, 35)">
+      <g transform="rotate(-5)">
+        <path d="M0 25 L-40 -15 A50 50 0 0 1 -28 -30 Z" fill="url(#fanGradient)" stroke="#8b4513" stroke-width="0.5"/>
+        <path d="M0 25 L-28 -30 A50 50 0 0 1 -10 -38 Z" fill="url(#fanGradient)" stroke="#8b4513" stroke-width="0.5"/>
+        <path d="M0 25 L-10 -38 A50 50 0 0 1 10 -38 Z" fill="url(#fanGradient)" stroke="#8b4513" stroke-width="0.5"/>
+        <path d="M0 25 L10 -38 A50 50 0 0 1 28 -30 Z" fill="url(#fanGradient)" stroke="#8b4513" stroke-width="0.5"/>
+        <path d="M0 25 L28 -30 A50 50 0 0 1 40 -15 Z" fill="url(#fanGradient)" stroke="#8b4513" stroke-width="0.5"/>
+        <line x1="0" y1="25" x2="-34" y2="-22" stroke="#8b4513" stroke-width="0.8"/>
+        <line x1="0" y1="25" x2="-19" y2="-34" stroke="#8b4513" stroke-width="0.8"/>
+        <line x1="0" y1="25" x2="0" y2="-38" stroke="#8b4513" stroke-width="0.8"/>
+        <line x1="0" y1="25" x2="19" y2="-34" stroke="#8b4513" stroke-width="0.8"/>
+        <line x1="0" y1="25" x2="34" y2="-22" stroke="#8b4513" stroke-width="0.8"/>
+        <path d="M-40 -15 A50 50 0 0 1 40 -15" fill="none" stroke="#c0392b" stroke-width="2"/>
+      </g>
+      <circle cx="0" cy="23" r="5" fill="url(#goldAccent)"/>
+      <ellipse cx="0" cy="30" rx="8" ry="6" fill="url(#contessaSkin)"/>
+    </g>
+  </g>
+  
+  <text x="100" y="202" text-anchor="middle" fill="url(#contessaAccent)" font-family="Georgia, serif" font-size="24" font-weight="bold" letter-spacing="3">CONTESSA</text>
+  <rect x="12" y="214" width="176" height="54" rx="6" fill="rgba(0,0,0,0.5)" stroke="url(#contessaAccent)" stroke-width="0.5"/>
+  <text x="100" y="235" text-anchor="middle" fill="#e74c3c" font-family="Arial, sans-serif" font-size="11" font-weight="bold">Counteraction:</text>
+  <text x="100" y="252" text-anchor="middle" fill="#ffb3b3" font-family="Arial, sans-serif" font-size="10">Blocks assassination</text>
+  
+  <path d="M15 25 L15 15 L25 15" fill="none" stroke="url(#contessaAccent)" stroke-width="1.5" opacity="0.6"/>
+  <path d="M185 25 L185 15 L175 15" fill="none" stroke="url(#contessaAccent)" stroke-width="1.5" opacity="0.6"/>
+  <path d="M15 255 L15 265 L25 265" fill="none" stroke="url(#contessaAccent)" stroke-width="1.5" opacity="0.6"/>
+  <path d="M185 255 L185 265 L175 265" fill="none" stroke="url(#contessaAccent)" stroke-width="1.5" opacity="0.6"/>
+</svg>

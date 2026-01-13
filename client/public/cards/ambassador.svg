@@ -1,0 +1,95 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 280">
+  <defs>
+    <linearGradient id="ambassadorBg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#4a5f3c"/>
+      <stop offset="50%" style="stop-color:#2d3a24"/>
+      <stop offset="100%" style="stop-color:#1a2318"/>
+    </linearGradient>
+    <linearGradient id="ambassadorAccent" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#f39c12"/>
+      <stop offset="50%" style="stop-color:#e67e22"/>
+      <stop offset="100%" style="stop-color:#d35400"/>
+    </linearGradient>
+    <linearGradient id="ambassadorGlow" x1="50%" y1="0%" x2="50%" y2="100%">
+      <stop offset="0%" style="stop-color:#f1c40f;stop-opacity:0.4"/>
+      <stop offset="100%" style="stop-color:#4a5f3c;stop-opacity:0"/>
+    </linearGradient>
+    <linearGradient id="ambassadorSkin" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#8b6914"/>
+      <stop offset="100%" style="stop-color:#6b4f0a"/>
+    </linearGradient>
+    <linearGradient id="ambassadorRobe" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#7d8471"/>
+      <stop offset="50%" style="stop-color:#5c6152"/>
+      <stop offset="100%" style="stop-color:#4a5043"/>
+    </linearGradient>
+    <linearGradient id="turbanGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#e67e22"/>
+      <stop offset="50%" style="stop-color:#d35400"/>
+      <stop offset="100%" style="stop-color:#a04000"/>
+    </linearGradient>
+    <linearGradient id="scrollGradient" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" style="stop-color:#fdf6e3"/>
+      <stop offset="100%" style="stop-color:#e8d5a3"/>
+    </linearGradient>
+    <filter id="ambassadorDropShadow">
+      <feDropShadow dx="0" dy="2" stdDeviation="3" flood-color="#f39c12" flood-opacity="0.5"/>
+    </filter>
+  </defs>
+  
+  <rect width="200" height="280" rx="12" fill="url(#ambassadorBg)"/>
+  <g opacity="0.15" stroke="#f39c12" stroke-width="0.5" fill="none">
+    <ellipse cx="50" cy="35" rx="15" ry="5" transform="rotate(-10 50 35)"/>
+    <ellipse cx="150" cy="45" rx="12" ry="4" transform="rotate(5 150 45)"/>
+    <ellipse cx="30" cy="60" rx="8" ry="3"/>
+  </g>
+  <rect x="0" y="0" width="200" height="120" rx="12" fill="url(#ambassadorGlow)"/>
+  <rect x="8" y="8" width="184" height="264" rx="10" fill="none" stroke="url(#ambassadorAccent)" stroke-width="1" opacity="0.3"/>
+  
+  <g transform="translate(100, 95)" filter="url(#ambassadorDropShadow)">
+    <path d="M-35 90 Q-38 55 -30 35 L-20 28 L20 28 L30 35 Q38 55 35 90 Z" fill="url(#ambassadorRobe)" stroke="#4a5043" stroke-width="1"/>
+    <path d="M-25 32 L-25 85" stroke="#5c6152" stroke-width="1"/>
+    <path d="M25 32 L25 85" stroke="#5c6152" stroke-width="1"/>
+    <path d="M-15 30 L-12 75 L12 75 L15 30 Z" fill="#e67e22" stroke="#d35400" stroke-width="0.5"/>
+    <path d="M-18 28 Q0 38 18 28 L15 45 Q0 50 -15 45 Z" fill="#f39c12" stroke="#d35400" stroke-width="0.5"/>
+    <ellipse cx="0" cy="0" rx="18" ry="22" fill="url(#ambassadorSkin)"/>
+    <ellipse cx="0" cy="-18" rx="25" ry="18" fill="url(#turbanGradient)"/>
+    <path d="M-22 -15 Q0 -35 22 -15" fill="#d35400"/>
+    <path d="M-18 -20 Q0 -32 18 -20" fill="#e67e22"/>
+    <ellipse cx="0" cy="-25" rx="12" ry="8" fill="#d35400"/>
+    <path d="M-12 12 Q-6 15 0 12 Q6 15 12 12" fill="#2c2c2c" stroke="none"/>
+    <path d="M-10 12 L-15 14" stroke="#2c2c2c" stroke-width="2"/>
+    <path d="M10 12 L15 14" stroke="#2c2c2c" stroke-width="2"/>
+    <ellipse cx="-7" cy="0" rx="4" ry="3" fill="#f5f5f5"/>
+    <circle cx="-6" cy="0" r="2.5" fill="#2c2c2c"/>
+    <ellipse cx="7" cy="0" rx="4" ry="3" fill="#f5f5f5"/>
+    <circle cx="8" cy="0" r="2.5" fill="#2c2c2c"/>
+    <path d="M-12 -5 L-3 -4" stroke="#2c2c2c" stroke-width="1.5" fill="none"/>
+    <path d="M3 -4 L12 -5" stroke="#2c2c2c" stroke-width="1.5" fill="none"/>
+    <path d="M0 3 L-2 9 L2 9" fill="none" stroke="#5a4510" stroke-width="1.2"/>
+    <ellipse cx="-17" cy="2" rx="3" ry="5" fill="url(#ambassadorSkin)"/>
+    <ellipse cx="17" cy="2" rx="3" ry="5" fill="url(#ambassadorSkin)"/>
+    <g transform="translate(-32, 55)">
+      <ellipse cx="0" cy="0" rx="8" ry="10" fill="url(#ambassadorSkin)"/>
+      <g transform="translate(5, -15) rotate(15)">
+        <rect x="-8" y="-12" width="25" height="30" fill="url(#scrollGradient)" rx="2"/>
+        <ellipse cx="-8" cy="3" rx="3" ry="14" fill="#e8d5a3" stroke="#c9b896" stroke-width="0.5"/>
+        <ellipse cx="17" cy="3" rx="3" ry="14" fill="#e8d5a3" stroke="#c9b896" stroke-width="0.5"/>
+        <line x1="-3" y1="-5" x2="12" y2="-5" stroke="#8b7355" stroke-width="0.8"/>
+        <line x1="-3" y1="0" x2="12" y2="0" stroke="#8b7355" stroke-width="0.8"/>
+        <line x1="-3" y1="5" x2="10" y2="5" stroke="#8b7355" stroke-width="0.8"/>
+      </g>
+    </g>
+  </g>
+  
+  <text x="100" y="202" text-anchor="middle" fill="url(#ambassadorAccent)" font-family="Georgia, serif" font-size="19" font-weight="bold" letter-spacing="2">AMBASSADOR</text>
+  <rect x="12" y="214" width="176" height="54" rx="6" fill="rgba(0,0,0,0.5)" stroke="url(#ambassadorAccent)" stroke-width="0.5"/>
+  <text x="100" y="231" text-anchor="middle" fill="#f39c12" font-family="Arial, sans-serif" font-size="10" font-weight="bold">Action: Exchange</text>
+  <text x="100" y="244" text-anchor="middle" fill="#e0c080" font-family="Arial, sans-serif" font-size="8">(Exchange cards with Court Deck)</text>
+  <text x="100" y="259" text-anchor="middle" fill="#9b9bff" font-family="Arial, sans-serif" font-size="9">Counteraction: Blocks stealing</text>
+  
+  <path d="M15 25 L15 15 L25 15" fill="none" stroke="url(#ambassadorAccent)" stroke-width="1.5" opacity="0.6"/>
+  <path d="M185 25 L185 15 L175 15" fill="none" stroke="url(#ambassadorAccent)" stroke-width="1.5" opacity="0.6"/>
+  <path d="M15 255 L15 265 L25 265" fill="none" stroke="url(#ambassadorAccent)" stroke-width="1.5" opacity="0.6"/>
+  <path d="M185 255 L185 265 L175 265" fill="none" stroke="url(#ambassadorAccent)" stroke-width="1.5" opacity="0.6"/>
+</svg>

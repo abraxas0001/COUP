@@ -1,0 +1,88 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 280">
+  <defs>
+    <linearGradient id="captainBg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#1e3a5f"/>
+      <stop offset="50%" style="stop-color:#152238"/>
+      <stop offset="100%" style="stop-color:#0a1628"/>
+    </linearGradient>
+    <linearGradient id="captainAccent" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#5dade2"/>
+      <stop offset="100%" style="stop-color:#2980b9"/>
+    </linearGradient>
+    <linearGradient id="captainGlow" x1="50%" y1="0%" x2="50%" y2="100%">
+      <stop offset="0%" style="stop-color:#3498db;stop-opacity:0.4"/>
+      <stop offset="100%" style="stop-color:#1e3a5f;stop-opacity:0"/>
+    </linearGradient>
+    <linearGradient id="captainSkin" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#d4a574"/>
+      <stop offset="100%" style="stop-color:#c4956a"/>
+    </linearGradient>
+    <linearGradient id="captainUniform" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#2980b9"/>
+      <stop offset="50%" style="stop-color:#1a5276"/>
+      <stop offset="100%" style="stop-color:#154360"/>
+    </linearGradient>
+    <linearGradient id="metalGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#7f8c8d"/>
+      <stop offset="30%" style="stop-color:#bdc3c7"/>
+      <stop offset="70%" style="stop-color:#95a5a6"/>
+      <stop offset="100%" style="stop-color:#7f8c8d"/>
+    </linearGradient>
+    <filter id="captainDropShadow">
+      <feDropShadow dx="0" dy="2" stdDeviation="4" flood-color="#3498db" flood-opacity="0.5"/>
+    </filter>
+  </defs>
+  
+  <rect width="200" height="280" rx="12" fill="url(#captainBg)"/>
+  <g opacity="0.1" stroke="#5dade2" stroke-width="0.3" fill="none">
+    <circle cx="100" cy="75" r="40" stroke-dasharray="5,5"/>
+    <path d="M170 20 L180 30 L170 40"/><path d="M170 25 L177 30 L170 35"/>
+  </g>
+  <rect x="0" y="0" width="200" height="120" rx="12" fill="url(#captainGlow)"/>
+  <rect x="8" y="8" width="184" height="264" rx="10" fill="none" stroke="url(#captainAccent)" stroke-width="1" opacity="0.3"/>
+  
+  <g transform="translate(100, 95)" filter="url(#captainDropShadow)">
+    <path d="M-32 85 Q-35 50 -28 35 L-18 28 L18 28 L28 35 Q35 50 32 85 Z" fill="url(#captainUniform)" stroke="#154360" stroke-width="1"/>
+    <line x1="0" y1="32" x2="0" y2="80" stroke="#1a5276" stroke-width="2"/>
+    <circle cx="0" cy="40" r="2" fill="#ffd700"/>
+    <circle cx="0" cy="52" r="2" fill="#ffd700"/>
+    <circle cx="0" cy="64" r="2" fill="#ffd700"/>
+    <rect x="-30" y="28" width="12" height="6" rx="1" fill="#ffd700"/>
+    <rect x="18" y="28" width="12" height="6" rx="1" fill="#ffd700"/>
+    <path d="M-15 28 L0 35 L15 28" fill="#1a5276" stroke="#154360" stroke-width="0.5"/>
+    <ellipse cx="0" cy="2" rx="20" ry="24" fill="url(#captainSkin)"/>
+    <path d="M-15 -18 Q0 -25 15 -18 L12 -10 Q0 -15 -12 -10 Z" fill="#1a1a1a"/>
+    <path d="M-8 -20 Q0 -28 8 -20" fill="#2c2c2c"/>
+    <path d="M-10 12 Q0 22 10 12" fill="#1a1a1a"/>
+    <path d="M-6 8 L-6 18 Q0 24 6 18 L6 8" fill="#2c2c2c"/>
+    <path d="M-12 0 Q-7 -2 -4 1" fill="none" stroke="#1a1a1a" stroke-width="1.5"/>
+    <circle cx="-8" cy="0" r="2" fill="#2c2c2c"/>
+    <path d="M4 1 Q7 -2 12 0" fill="none" stroke="#1a1a1a" stroke-width="1.5"/>
+    <circle cx="8" cy="0" r="2" fill="#2c2c2c"/>
+    <path d="M-13 -4 L-4 -3" stroke="#1a1a1a" stroke-width="2" fill="none"/>
+    <path d="M4 -3 L13 -4" stroke="#1a1a1a" stroke-width="2" fill="none"/>
+    <path d="M0 2 L-1 6 L1 6" fill="none" stroke="#c4956a" stroke-width="1"/>
+    <ellipse cx="-19" cy="3" rx="3" ry="5" fill="url(#captainSkin)"/>
+    <ellipse cx="19" cy="3" rx="3" ry="5" fill="url(#captainSkin)"/>
+    <g transform="translate(25, 45)">
+      <ellipse cx="0" cy="0" rx="10" ry="14" fill="url(#captainUniform)"/>
+      <ellipse cx="8" cy="12" rx="7" ry="8" fill="url(#captainSkin)"/>
+      <g transform="translate(-15, 0) rotate(-10)">
+        <path d="M0 0 L35 -2 L38 2 L35 5 L25 5 L25 15 L18 15 L18 5 L0 5 Z" fill="url(#metalGradient)" stroke="#5d6d7e" stroke-width="0.5"/>
+        <rect x="5" y="1" width="15" height="3" fill="#34495e"/>
+        <circle cx="32" cy="2" r="2" fill="#2c3e50"/>
+      </g>
+    </g>
+  </g>
+  
+  <text x="100" y="200" text-anchor="middle" fill="url(#captainAccent)" font-family="Georgia, serif" font-size="26" font-weight="bold" letter-spacing="3">CAPTAIN</text>
+  <rect x="12" y="212" width="176" height="56" rx="6" fill="rgba(0,0,0,0.5)" stroke="url(#captainAccent)" stroke-width="0.5"/>
+  <text x="100" y="230" text-anchor="middle" fill="#5dade2" font-family="Arial, sans-serif" font-size="11" font-weight="bold">Action: Steal</text>
+  <text x="100" y="244" text-anchor="middle" fill="#a0c4e0" font-family="Arial, sans-serif" font-size="9">(Steal 2 coins from another player)</text>
+  <text x="100" y="260" text-anchor="middle" fill="#9b9bff" font-family="Arial, sans-serif" font-size="9">Counteraction: Blocks stealing</text>
+  
+  <path d="M15 25 L15 15 L25 15" fill="none" stroke="url(#captainAccent)" stroke-width="1.5" opacity="0.6"/>
+  <path d="M185 25 L185 15 L175 15" fill="none" stroke="url(#captainAccent)" stroke-width="1.5" opacity="0.6"/>
+  <path d="M15 255 L15 265 L25 265" fill="none" stroke="url(#captainAccent)" stroke-width="1.5" opacity="0.6"/>
+  <path d="M185 255 L185 265 L175 265" fill="none" stroke="url(#captainAccent)" stroke-width="1.5" opacity="0.6"/>
+</svg>

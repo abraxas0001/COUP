@@ -1,0 +1,142 @@
+import { useEffect, useState } from 'react'
+import { useParams, useNavigate } from 'react-router-dom'
+import { motion, AnimatePresence } from 'framer-motion'
+import { useGameStore } from '../store/gameStore'
+import GameTable from '../components/game/GameTable'
+import PlayerHand from '../components/game/PlayerHand'
+import ActionPanel from '../components/game/ActionPanel'
+import GameLog from '../components/game/GameLog'
+import ResponsePanel from '../components/game/ResponsePanel'
+import ExchangeModal from '../components/game/ExchangeModal'
+import InfluenceLossModal from '../components/game/InfluenceLossModal'
+import GameOverModal from '../components/game/GameOverModal'
+import PhaseIndicator from '../components/game/PhaseIndicator'
+import { Loader2 } from 'lucide-react'
+
+export default function Game() {
+  const { lobbyCode } = useParams()
+  const navigate = useNavigate()
+  const { gameState, socket, resetGame } = useGameStore()
+  
+  const [showExchangeModal, setShowExchangeModal] = useState(false)
+  const [showInfluenceLossModal, setShowInfluenceLossModal] = useState(false)
+
+  // Get my player data
+  const myId = socket?.id
+  const myPlayer = gameState?.players?.find(p => p.id === myId)
+
+  // Watch for phase changes that require modals
+  useEffect(() => {
+    if (!gameState) return
+
+    if (gameState.exchangeOptions && gameState.phase === 'exchangingCards') {
+      setShowExchangeModal(true)
+    } else {
+      setShowExchangeModal(false)
+    }
+
+    if (gameState.mustSelectInfluence) {
+      setShowInfluenceLossModal(true)
+    } else {
+      setShowInfluenceLossModal(false)
+    }
+  }, [gameState?.phase, gameState?.exchangeOptions, gameState?.mustSelectInfluence])
+
+  // Handle leaving game
+  const handleLeave = () => {
+    resetGame()
+    navigate('/')
+  }
+
+  if (!gameState) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-coup-dark">
+        <div className="text-center">
+          <Loader2 className="w-12 h-12 text-coup-gold animate-spin mx-auto mb-4" />
+          <p className="text-gray-400">Loading game...</p>
+        </div>
+      </div>
+    )
+  }
+
+  const isGameOver = gameState.phase === 'gameOver'
+  const isMyTurn = gameState.isYourTurn
+
+  return (
+    <div className="min-h-screen bg-coup-dark game-table flex flex-col overflow-hidden">
+      {/* Phase Indicator */}
+      <PhaseIndicator gameState={gameState} />
+
+      {/* Main Game Area */}
+      <div className="flex-1 flex">
+        {/* Game Table (Center) */}
+        <div className="flex-1 flex flex-col p-4">
+          <GameTable 
+            gameState={gameState} 
+            myId={myId}
+          />
+        </div>
+
+        {/* Game Log (Right Sidebar) */}
+        <div className="w-80 hidden lg:block border-l border-coup-gray-light">
+          <GameLog logs={gameState.gameLog} />
+        </div>
+      </div>
+
+      {/* Bottom Panel */}
+      <div className="border-t border-coup-gray-light bg-coup-darker/80 backdrop-blur-sm">
+        <div className="max-w-7xl mx-auto p-4">
+          <div className="flex items-end gap-6">
+            {/* Player Hand */}
+            <div className="flex-shrink-0">
+              <PlayerHand 
+                player={myPlayer} 
+                isMyTurn={isMyTurn}
+              />
+            </div>
+
+            {/* Action/Response Panel */}
+            <div className="flex-1">
+              {isMyTurn && gameState.phase === 'actionDeclaration' ? (
+                <ActionPanel 
+                  actions={gameState.availableActions}
+                  playerCoins={myPlayer?.coins || 0}
+                />
+              ) : (
+                <ResponsePanel 
+                  gameState={gameState}
+                  myId={myId}
+                />
+              )}
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Modals */}
+      <AnimatePresence>
+        {showExchangeModal && gameState.exchangeOptions && (
+          <ExchangeModal
+            exchangeOptions={gameState.exchangeOptions}
+            onClose={() => setShowExchangeModal(false)}
+          />
+        )}
+
+        {showInfluenceLossModal && myPlayer && (
+          <InfluenceLossModal
+            player={myPlayer}
+            onClose={() => setShowInfluenceLossModal(false)}
+          />
+        )}
+
+        {isGameOver && (
+          <GameOverModal
+            winner={gameState.winner}
+            myId={myId}
+            onLeave={handleLeave}
+          />
+        )}
+      </AnimatePresence>
+    </div>
+  )
+}

@@ -1,0 +1,84 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 280">
+  <defs>
+    <linearGradient id="assassinBg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#2c3e50"/>
+      <stop offset="50%" style="stop-color:#1a252f"/>
+      <stop offset="100%" style="stop-color:#0d1318"/>
+    </linearGradient>
+    <linearGradient id="assassinAccent" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#95a5a6"/>
+      <stop offset="50%" style="stop-color:#7f8c8d"/>
+      <stop offset="100%" style="stop-color:#5d6d7e"/>
+    </linearGradient>
+    <linearGradient id="assassinGlow" x1="50%" y1="0%" x2="50%" y2="100%">
+      <stop offset="0%" style="stop-color:#5dade2;stop-opacity:0.3"/>
+      <stop offset="100%" style="stop-color:#1a252f;stop-opacity:0"/>
+    </linearGradient>
+    <linearGradient id="assassinSkin" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#f5deb3"/>
+      <stop offset="100%" style="stop-color:#deb887"/>
+    </linearGradient>
+    <linearGradient id="assassinSuit" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#2c3e50"/>
+      <stop offset="50%" style="stop-color:#1a252f"/>
+      <stop offset="100%" style="stop-color:#0d1318"/>
+    </linearGradient>
+    <linearGradient id="bladeGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" style="stop-color:#bdc3c7"/>
+      <stop offset="50%" style="stop-color:#ecf0f1"/>
+      <stop offset="100%" style="stop-color:#95a5a6"/>
+    </linearGradient>
+    <filter id="assassinDropShadow">
+      <feDropShadow dx="0" dy="2" stdDeviation="3" flood-color="#5dade2" flood-opacity="0.4"/>
+    </filter>
+  </defs>
+  
+  <rect width="200" height="280" rx="12" fill="url(#assassinBg)"/>
+  <g opacity="0.15" stroke="#5dade2" stroke-width="0.5" fill="none">
+    <circle cx="40" cy="40" r="20"/><circle cx="40" cy="40" r="10"/>
+    <line x1="60" y1="40" x2="90" y2="40"/>
+    <circle cx="160" cy="60" r="15"/><line x1="145" y1="60" x2="120" y2="60"/>
+  </g>
+  <rect x="0" y="0" width="200" height="120" rx="12" fill="url(#assassinGlow)"/>
+  <rect x="8" y="8" width="184" height="264" rx="10" fill="none" stroke="url(#assassinAccent)" stroke-width="1" opacity="0.3"/>
+  
+  <g transform="translate(100, 90)" filter="url(#assassinDropShadow)">
+    <path d="M-28 90 L-25 45 Q-20 35 -15 30 L15 30 Q20 35 25 45 L28 90 Z" fill="url(#assassinSuit)" stroke="#1a252f" stroke-width="1"/>
+    <line x1="0" y1="35" x2="0" y2="85" stroke="#34495e" stroke-width="1"/>
+    <path d="M-15 50 L-5 55 L-15 60" fill="none" stroke="#5dade2" stroke-width="1" opacity="0.5"/>
+    <path d="M15 50 L5 55 L15 60" fill="none" stroke="#5dade2" stroke-width="1" opacity="0.5"/>
+    <path d="M-12 28 Q0 32 12 28" fill="#1a252f"/>
+    <ellipse cx="0" cy="5" rx="18" ry="22" fill="url(#assassinSkin)"/>
+    <ellipse cx="0" cy="-12" rx="16" ry="12" fill="#d4a855"/>
+    <path d="M-12 -18 Q0 -35 12 -18" fill="#c9a227"/>
+    <circle cx="0" cy="-30" r="8" fill="#d4a855"/>
+    <ellipse cx="0" cy="-30" rx="6" ry="5" fill="#c9a227"/>
+    <path d="M-15 3 L-8 5" stroke="#5dade2" stroke-width="2" opacity="0.8"/>
+    <path d="M-14 7 L-10 8" stroke="#5dade2" stroke-width="1.5" opacity="0.6"/>
+    <ellipse cx="-7" cy="2" rx="3" ry="2.5" fill="#ecf0f1"/>
+    <circle cx="-6" cy="2" r="2" fill="#2980b9"/>
+    <ellipse cx="7" cy="2" rx="3" ry="2.5" fill="#ecf0f1"/>
+    <circle cx="8" cy="2" r="2" fill="#2980b9"/>
+    <path d="M-11 -2 L-4 -1" stroke="#8b7355" stroke-width="1.5" fill="none"/>
+    <path d="M4 -1 L11 -2" stroke="#8b7355" stroke-width="1.5" fill="none"/>
+    <path d="M0 5 L-1 10 L1 10" fill="none" stroke="#c9a078" stroke-width="1"/>
+    <path d="M-4 14 Q0 16 4 14" fill="#8b5a5a" stroke="none"/>
+    <ellipse cx="-17" cy="5" rx="3" ry="5" fill="url(#assassinSkin)"/>
+    <ellipse cx="17" cy="5" rx="3" ry="5" fill="url(#assassinSkin)"/>
+    <g transform="translate(-30, 55) rotate(-20)">
+      <ellipse cx="0" cy="0" rx="8" ry="12" fill="url(#assassinSuit)"/>
+      <path d="M5 -5 L35 -8 L38 -5 L35 -2 L5 -2 Z" fill="url(#bladeGradient)" stroke="#7f8c8d" stroke-width="0.5"/>
+    </g>
+  </g>
+  
+  <text x="100" y="200" text-anchor="middle" fill="url(#assassinAccent)" font-family="Georgia, serif" font-size="24" font-weight="bold" letter-spacing="3">ASSASSIN</text>
+  <rect x="12" y="212" width="176" height="56" rx="6" fill="rgba(0,0,0,0.5)" stroke="url(#assassinAccent)" stroke-width="0.5"/>
+  <text x="100" y="230" text-anchor="middle" fill="#bdc3c7" font-family="Arial, sans-serif" font-size="11" font-weight="bold">Action: Assassinate</text>
+  <text x="100" y="244" text-anchor="middle" fill="#a0a0a0" font-family="Arial, sans-serif" font-size="9">(Pay 3 coins to assassinate</text>
+  <text x="100" y="256" text-anchor="middle" fill="#a0a0a0" font-family="Arial, sans-serif" font-size="9">another player)</text>
+  
+  <path d="M15 25 L15 15 L25 15" fill="none" stroke="url(#assassinAccent)" stroke-width="1.5" opacity="0.6"/>
+  <path d="M185 25 L185 15 L175 15" fill="none" stroke="url(#assassinAccent)" stroke-width="1.5" opacity="0.6"/>
+  <path d="M15 255 L15 265 L25 265" fill="none" stroke="url(#assassinAccent)" stroke-width="1.5" opacity="0.6"/>
+  <path d="M185 255 L185 265 L175 265" fill="none" stroke="url(#assassinAccent)" stroke-width="1.5" opacity="0.6"/>
+</svg>

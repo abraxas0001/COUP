@@ -1,0 +1,70 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 280">
+  <defs>
+    <linearGradient id="dukeBg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#4a1a6b"/>
+      <stop offset="50%" style="stop-color:#2d1040"/>
+      <stop offset="100%" style="stop-color:#1a0a2e"/>
+    </linearGradient>
+    <linearGradient id="dukeAccent" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#ffd700"/>
+      <stop offset="100%" style="stop-color:#b8860b"/>
+    </linearGradient>
+    <linearGradient id="dukeGlow" x1="50%" y1="0%" x2="50%" y2="100%">
+      <stop offset="0%" style="stop-color:#f1c40f;stop-opacity:0.5"/>
+      <stop offset="100%" style="stop-color:#4a1a6b;stop-opacity:0"/>
+    </linearGradient>
+    <linearGradient id="dukeSkin" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#e8beac"/>
+      <stop offset="100%" style="stop-color:#d4a590"/>
+    </linearGradient>
+    <linearGradient id="dukeRobe" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#8e44ad"/>
+      <stop offset="50%" style="stop-color:#6c3483"/>
+      <stop offset="100%" style="stop-color:#4a235a"/>
+    </linearGradient>
+    <filter id="dukeDropShadow">
+      <feDropShadow dx="0" dy="2" stdDeviation="3" flood-color="#ffd700" flood-opacity="0.5"/>
+    </filter>
+  </defs>
+  
+  <rect width="200" height="280" rx="12" fill="url(#dukeBg)"/>
+  <ellipse cx="100" cy="25" rx="70" ry="20" fill="none" stroke="url(#dukeAccent)" stroke-width="1" opacity="0.4"/>
+  <path d="M30 25 Q100 -5 170 25" fill="none" stroke="url(#dukeAccent)" stroke-width="1" opacity="0.5"/>
+  <rect x="8" y="8" width="184" height="264" rx="10" fill="none" stroke="url(#dukeAccent)" stroke-width="1" opacity="0.3"/>
+  <rect x="0" y="0" width="200" height="120" rx="12" fill="url(#dukeGlow)"/>
+  
+  <g transform="translate(100, 95)" filter="url(#dukeDropShadow)">
+    <path d="M-35 85 Q-40 50 -30 30 L-20 25 L-15 30 Q-5 35 0 35 Q5 35 15 30 L20 25 L30 30 Q40 50 35 85 Z" fill="url(#dukeRobe)" stroke="#4a235a" stroke-width="1"/>
+    <ellipse cx="0" cy="28" rx="22" ry="12" fill="#9b59b6"/>
+    <ellipse cx="0" cy="25" rx="18" ry="10" fill="#8e44ad"/>
+    <path d="M-15 22 Q0 30 15 22" fill="#6c3483"/>
+    <circle cx="0" cy="45" r="8" fill="url(#dukeAccent)" stroke="#b8860b" stroke-width="1"/>
+    <text x="0" y="49" text-anchor="middle" fill="#4a235a" font-size="10" font-weight="bold">$</text>
+    <ellipse cx="0" cy="0" rx="22" ry="26" fill="url(#dukeSkin)"/>
+    <ellipse cx="-8" cy="-3" rx="3" ry="2" fill="#2c1810"/>
+    <ellipse cx="8" cy="-3" rx="3" ry="2" fill="#2c1810"/>
+    <path d="M-4 5 Q0 8 4 5" fill="none" stroke="#8b6914" stroke-width="1.5"/>
+    <path d="M-8 12 Q0 16 8 12" fill="none" stroke="#a0522d" stroke-width="1.5"/>
+    <path d="M-5 -24 Q0 -30 5 -24" fill="#4a3728" stroke="none"/>
+    <ellipse cx="0" cy="-15" rx="5" ry="6" fill="#ffd700" stroke="#b8860b" stroke-width="1"/>
+    <ellipse cx="0" cy="-16" rx="2" ry="3" fill="#fff8dc" opacity="0.6"/>
+    <ellipse cx="-22" cy="0" rx="4" ry="6" fill="url(#dukeSkin)"/>
+    <ellipse cx="22" cy="0" rx="4" ry="6" fill="url(#dukeSkin)"/>
+    <g transform="translate(32, 50)">
+      <ellipse cx="0" cy="0" rx="10" ry="12" fill="url(#dukeSkin)"/>
+      <rect x="-8" y="-5" width="16" height="4" rx="2" fill="url(#dukeSkin)"/>
+      <ellipse cx="5" cy="-2" rx="5" ry="3" fill="#ffd700"/>
+    </g>
+  </g>
+  
+  <text x="100" y="200" text-anchor="middle" fill="url(#dukeAccent)" font-family="Georgia, serif" font-size="28" font-weight="bold" letter-spacing="4">DUKE</text>
+  <rect x="12" y="212" width="176" height="56" rx="6" fill="rgba(0,0,0,0.5)" stroke="url(#dukeAccent)" stroke-width="0.5"/>
+  <text x="100" y="230" text-anchor="middle" fill="#ffd700" font-family="Arial, sans-serif" font-size="11" font-weight="bold">Action: Tax</text>
+  <text x="100" y="244" text-anchor="middle" fill="#e0e0e0" font-family="Arial, sans-serif" font-size="9">(Take 3 coins from Treasury)</text>
+  <text x="100" y="260" text-anchor="middle" fill="#9b9bff" font-family="Arial, sans-serif" font-size="9">Counteraction: Blocks Foreign Aid</text>
+  
+  <path d="M15 25 L15 15 L25 15" fill="none" stroke="url(#dukeAccent)" stroke-width="1.5" opacity="0.6"/>
+  <path d="M185 25 L185 15 L175 15" fill="none" stroke="url(#dukeAccent)" stroke-width="1.5" opacity="0.6"/>
+  <path d="M15 255 L15 265 L25 265" fill="none" stroke="url(#dukeAccent)" stroke-width="1.5" opacity="0.6"/>
+  <path d="M185 255 L185 265 L175 265" fill="none" stroke="url(#dukeAccent)" stroke-width="1.5" opacity="0.6"/>
+</svg>
