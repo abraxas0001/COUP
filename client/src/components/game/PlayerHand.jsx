@@ -292,16 +292,15 @@ function CardDetailsModal({ card, charInfo, cardImage, onClose }) {
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
       onClick={onClose}
-      className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-lg"
+      className="fixed inset-0 z-[100] flex items-center justify-center bg-black/85 backdrop-blur-xl"
     >
       <motion.div
-        initial={{ scale: 0.3, opacity: 0, rotateY: -180 }}
-        animate={{ scale: 1, opacity: 1, rotateY: 0 }}
-        exit={{ scale: 0.3, opacity: 0, rotateY: 180 }}
-        transition={{ type: 'spring', stiffness: 150, damping: 20 }}
+        initial={{ scale: 0.5, opacity: 0 }}
+        animate={{ scale: 1, opacity: 1 }}
+        exit={{ scale: 0.5, opacity: 0 }}
+        transition={{ type: 'spring', stiffness: 200, damping: 20 }}
         onClick={(e) => e.stopPropagation()}
-        className="relative w-full max-w-sm mx-4"
-        style={{ perspective: '1000px' }}
+        className="relative w-full max-w-md mx-4"
       >
         {/* Glow background */}
         <div className={`absolute -inset-6 bg-gradient-to-r ${charInfo?.gradient} opacity-40 blur-3xl rounded-3xl`} />
