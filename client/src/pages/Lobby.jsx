@@ -38,6 +38,18 @@ export default function Lobby() {
   const [starting, setStarting] = useState(false)
   const [joinError, setJoinError] = useState(null)
   const [isJoining, setIsJoining] = useState(false)
+  const [loadingTimeout, setLoadingTimeout] = useState(false)
+
+  // Timeout for loading state
+  useEffect(() => {
+    if (!lobby && !joinError && isConnected) {
+      const timer = setTimeout(() => {
+        setLoadingTimeout(true)
+      }, 5000) // 5 second timeout for lobby
+      
+      return () => clearTimeout(timer)
+    }
+  }, [lobby, joinError, isConnected])
 
   // Try to join lobby if we don't have lobby data
   useEffect(() => {
@@ -128,9 +140,22 @@ export default function Lobby() {
       <div className="min-h-screen flex items-center justify-center">
         <div className="text-center">
           <Loader2 className="w-12 h-12 text-coup-gold animate-spin mx-auto mb-4" />
-          <p className="text-gray-400">
+          <p className="text-gray-400 mb-4">
             {!isConnected ? 'Connecting to server...' : 'Loading lobby...'}
           </p>
+          {loadingTimeout && (
+            <div className="mt-4">
+              <p className="text-gray-500 text-sm mb-4">
+                Lobby not found or has expired.
+              </p>
+              <button
+                onClick={() => navigate('/')}
+                className="btn-primary"
+              >
+                Return to Home
+              </button>
+            </div>
+          )}
         </div>
       </div>
     )

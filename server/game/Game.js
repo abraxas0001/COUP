@@ -449,6 +449,8 @@ export class Game {
       return { success: false, error: 'Invalid blocker' };
     }
     
+    // Allow blocking in both AWAITING_CHALLENGE and AWAITING_BLOCK phases
+    // This lets users block immediately without waiting for challenge window to close
     if (this.phase !== GAME_PHASES.AWAITING_CHALLENGE && this.phase !== GAME_PHASES.AWAITING_BLOCK) {
       return { success: false, error: 'Cannot block in current phase' };
     }
@@ -575,8 +577,17 @@ export class Game {
         // Action not challenged, check if it can be blocked
         const actionInfo = ACTION_INFO[this.currentAction];
         if (actionInfo.canBeBlocked) {
-          this.phase = GAME_PHASES.AWAITING_BLOCK;
-          this.playersAllowed.clear();
+          // For targeted actions (Steal, Assassinate), if target already allowed, skip block phase
+          // For Foreign Aid, we need to check if everyone who can block has allowed
+          if (actionInfo.requiresTarget && this.currentTarget) {
+            // Target already allowed (was in playersAllowed), so they chose not to block
+            // Skip AWAITING_BLOCK and resolve the action
+            this.resolveAction();
+          } else {
+            // Foreign Aid - need separate block phase since anyone can block
+            this.phase = GAME_PHASES.AWAITING_BLOCK;
+            this.playersAllowed.clear();
+          }
         } else {
           this.resolveAction();
         }
@@ -855,11 +866,14 @@ export class Game {
       }
       
       // BLOCK LOGIC:
-      // Blocking happens in AWAITING_BLOCK phase (after challenge window closes)
+      // Show block options in AWAITING_CHALLENGE phase alongside challenge option
+      // so users can see all options at once (Challenge, Block, Allow)
       // 1. Foreign Aid: ANY player can block with Duke
       // 2. Steal: ONLY the target can block with Captain or Ambassador  
       // 3. Assassinate: ONLY the target can block with Contessa
-      if (this.phase === GAME_PHASES.AWAITING_BLOCK && !this.playersAllowed.has(playerId)) {
+      if ((this.phase === GAME_PHASES.AWAITING_CHALLENGE || this.phase === GAME_PHASES.AWAITING_BLOCK) && 
+          !this.playersAllowed.has(playerId) &&
+          playerId !== this.getCurrentPlayer()?.id) {
         if (actionInfo?.canBeBlocked) {
           if (this.currentAction === ACTIONS.FOREIGN_AID) {
             // Anyone can block Foreign Aid with Duke

@@ -230,3 +230,102 @@ body {
 .card-captain { background: linear-gradient(135deg, #3498DB 0%, #2874A6 100%); }
 .card-ambassador { background: linear-gradient(135deg, #27AE60 0%, #1E8449 100%); }
 .card-contessa { background: linear-gradient(135deg, #E74C3C 0%, #C0392B 100%); }
+
+/* Enhanced floating animation */
+@keyframes float {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-10px); }
+}
+
+/* Coin shimmer effect */
+@keyframes coinShimmer {
+  0% { background-position: -200% center; }
+  100% { background-position: 200% center; }
+}
+
+.coin-shimmer {
+  background: linear-gradient(
+    90deg, 
+    rgba(212, 175, 55, 0.1) 0%, 
+    rgba(244, 208, 63, 0.3) 50%, 
+    rgba(212, 175, 55, 0.1) 100%
+  );
+  background-size: 200% 100%;
+  animation: coinShimmer 2s linear infinite;
+}
+
+/* Card flip 3D */
+.card-3d {
+  transform-style: preserve-3d;
+  transition: transform 0.6s;
+}
+
+.card-3d:hover {
+  transform: rotateY(10deg) rotateX(5deg);
+}
+
+/* Glow pulse animation */
+@keyframes glowPulse {
+  0%, 100% { 
+    box-shadow: 0 0 20px rgba(212, 175, 55, 0.3), 0 0 40px rgba(212, 175, 55, 0.1);
+  }
+  50% { 
+    box-shadow: 0 0 30px rgba(212, 175, 55, 0.5), 0 0 60px rgba(212, 175, 55, 0.2);
+  }
+}
+
+.glow-pulse {
+  animation: glowPulse 2s ease-in-out infinite;
+}
+
+/* Treasury coin stack effect */
+@keyframes coinBounce {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-5px); }
+}
+
+.coin-stack > *:nth-child(1) { animation: coinBounce 1.5s ease-in-out infinite; }
+.coin-stack > *:nth-child(2) { animation: coinBounce 1.5s ease-in-out infinite 0.1s; }
+.coin-stack > *:nth-child(3) { animation: coinBounce 1.5s ease-in-out infinite 0.2s; }
+
+/* Radial gradient for table */
+.table-spotlight {
+  background: 
+    radial-gradient(ellipse at 50% 30%, rgba(212, 175, 55, 0.08) 0%, transparent 50%),
+    radial-gradient(ellipse at 50% 70%, rgba(107, 63, 160, 0.1) 0%, transparent 40%);
+}
+
+/* Card hover lift effect */
+.card-lift {
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.card-lift:hover {
+  transform: translateY(-8px);
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4), 0 0 20px rgba(212, 175, 55, 0.2);
+}
+
+/* Border beam animation */
+@keyframes borderBeam {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+.border-beam {
+  background: linear-gradient(90deg, #D4AF37, #F4D03F, #996515, #D4AF37);
+  background-size: 300% 300%;
+  animation: borderBeam 3s ease infinite;
+}
+
+/* Smooth number transitions */
+.number-transition {
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Glass morphism enhanced */
+.glass-premium {
+  background: rgba(26, 26, 26, 0.7);
+  backdrop-filter: blur(20px) saturate(180%);
+  border: 1px solid rgba(212, 175, 55, 0.15);
+}

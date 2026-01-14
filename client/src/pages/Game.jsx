@@ -16,14 +16,36 @@ import { Loader2 } from 'lucide-react'
 export default function Game() {
   const { lobbyCode } = useParams()
   const navigate = useNavigate()
-  const { gameState, socket, resetGame } = useGameStore()
+  const { gameState, socket, resetGame, lobby, isConnected } = useGameStore()
   
   const [showExchangeModal, setShowExchangeModal] = useState(false)
   const [showInfluenceLossModal, setShowInfluenceLossModal] = useState(false)
+  const [loadingTimeout, setLoadingTimeout] = useState(false)
 
   // Get my player data
   const myId = socket?.id
   const myPlayer = gameState?.players?.find(p => p.id === myId)
+
+  // Redirect to home if game doesn't exist after timeout or no connection
+  useEffect(() => {
+    // If no game state and no lobby, redirect after a short delay
+    if (!gameState && !lobby) {
+      const timer = setTimeout(() => {
+        setLoadingTimeout(true)
+      }, 3000) // 3 second timeout
+      
+      return () => clearTimeout(timer)
+    }
+  }, [gameState, lobby])
+
+  // Redirect when timeout occurs or connection issues
+  useEffect(() => {
+    if (loadingTimeout && !gameState) {
+      console.log('Game not found, redirecting to home...')
+      resetGame()
+      navigate('/')
+    }
+  }, [loadingTimeout, gameState, navigate, resetGame])
 
   // Watch for phase changes that require modals
   useEffect(() => {
@@ -53,7 +75,24 @@ export default function Game() {
       <div className="min-h-screen flex items-center justify-center bg-coup-dark">
         <div className="text-center">
           <Loader2 className="w-12 h-12 text-coup-gold animate-spin mx-auto mb-4" />
-          <p className="text-gray-400">Loading game...</p>
+          <p className="text-gray-400 mb-4">Loading game...</p>
+          {loadingTimeout && (
+            <div className="mt-4">
+              <p className="text-gray-500 text-sm mb-4">Game not found or has ended.</p>
+              <button
+                onClick={() => {
+                  resetGame()
+                  navigate('/')
+                }}
+                className="btn-primary"
+              >
+                Return to Home
+              </button>
+            </div>
+          )}
+          {!isConnected && (
+            <p className="text-yellow-500 text-sm mt-2">Reconnecting to server...</p>
+          )}
         </div>
       </div>
     )
@@ -63,7 +102,16 @@ export default function Game() {
   const isMyTurn = gameState.isYourTurn
 
   return (
-    <div className="min-h-screen bg-coup-dark game-table flex flex-col overflow-hidden">
+    <div className="min-h-screen bg-coup-dark game-table table-spotlight flex flex-col overflow-hidden relative">
+      {/* Animated background particles */}
+      <div className="absolute inset-0 pointer-events-none overflow-hidden">
+        <div className="absolute top-20 left-10 w-2 h-2 bg-coup-gold/20 rounded-full animate-float" style={{ animationDelay: '0s' }} />
+        <div className="absolute top-40 right-20 w-1 h-1 bg-coup-gold/30 rounded-full animate-float" style={{ animationDelay: '1s' }} />
+        <div className="absolute bottom-40 left-1/4 w-1.5 h-1.5 bg-coup-purple/20 rounded-full animate-float" style={{ animationDelay: '2s' }} />
+        <div className="absolute top-1/3 right-1/3 w-1 h-1 bg-coup-gold/20 rounded-full animate-float" style={{ animationDelay: '0.5s' }} />
+        <div className="absolute bottom-1/4 right-10 w-2 h-2 bg-coup-purple/30 rounded-full animate-float" style={{ animationDelay: '1.5s' }} />
+      </div>
+
       {/* Phase Indicator */}
       <PhaseIndicator gameState={gameState} />
 
