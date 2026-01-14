@@ -23,7 +23,16 @@ const io = new Server(httpServer, {
       : ['http://localhost:5173', 'http://127.0.0.1:5173', 'http://localhost:3000'],
     methods: ['GET', 'POST'],
     credentials: true
-  }
+  },
+  transports: ['websocket', 'polling'],
+  allowEIO3: true,
+  pingTimeout: 120000,
+  pingInterval: 25000,
+  upgradeTimeout: 120000,
+  maxHttpBufferSize: 1e6,
+  allowUpgrades: true,
+  perMessageDeflate: false,
+  httpCompression: false
 });
 
 app.use(cors());

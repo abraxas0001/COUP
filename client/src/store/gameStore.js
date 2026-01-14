@@ -26,7 +26,20 @@ export const useGameStore = create((set, get) => ({
   
   // Initialize socket connection
   initializeSocket: () => {
-    if (get().socket) return
+    const existingSocket = get().socket
+    
+    // If socket exists and is connected, reuse it
+    if (existingSocket?.connected) {
+      console.log('♻️ Reusing existing socket connection')
+      return
+    }
+    
+    // If socket exists but disconnected, clean it up
+    if (existingSocket) {
+      console.log('🧹 Cleaning up old socket connection')
+      existingSocket.removeAllListeners()
+      existingSocket.disconnect()
+    }
     
     // Show loading state while connecting
     set({ isLoading: true, error: 'Waking up server... This may take 60-90 seconds on first load.' })
@@ -39,8 +52,7 @@ export const useGameStore = create((set, get) => ({
       reconnectionDelayMax: 30000, // Up to 30 seconds between attempts
       timeout: 120000, // 120 second timeout for Render cold starts
       autoConnect: true,
-      forceNew: false,
-      multiplex: false,
+      forceNew: true, // Force new connection to avoid stale connections
     })
     
     socket.on('connect', () => {
@@ -98,8 +110,10 @@ export const useGameStore = create((set, get) => ({
   disconnect: () => {
     const { socket } = get()
     if (socket) {
+      console.log('🔌 Disconnecting socket')
+      socket.removeAllListeners()
       socket.disconnect()
-      set({ socket: null, isConnected: false })
+      set({ socket: null, isConnected: false, lobby: null, gameState: null })
     }
   },
   
