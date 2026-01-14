@@ -98,8 +98,10 @@ export default function GameTable({ gameState, myId }) {
             shadow-[0_0_10px_rgba(212,175,55,0.5)]" />
         </div>
         
-        {/* Deck in center */}
-        <CoupDeck deckSize={deckSize} />
+        {/* Deck in center - shifted right to align below player cards */}
+        <div className="ml-16 md:ml-24">
+          <CoupDeck deckSize={deckSize} />
+        </div>
         
         {/* Action Display on right with connecting thread */}
         <div className="flex items-center">

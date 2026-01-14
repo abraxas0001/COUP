@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { createPortal } from 'react-dom'
 import { motion, AnimatePresence } from 'framer-motion'
 import { 
   Coins, 
@@ -105,46 +106,68 @@ export default function ActionPanel({ actions, playerCoins }) {
         })}
       </div>
 
-      {/* Target Selection Modal */}
-      <AnimatePresence>
-        {selectedAction && (
+      {/* Target Selection Modal - Rendered as centered overlay */}
+      {selectedAction && createPortal(
+        <AnimatePresence>
           <motion.div
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: 10 }}
-            className="mt-4 p-4 glass border border-coup-gold/30 rounded-xl"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-[100] flex items-center justify-center p-4"
           >
-            <div className="flex items-center justify-between mb-4">
-              <div className="flex items-center gap-2">
-                <Target className="w-5 h-5 text-coup-gold" />
-                <span className="text-coup-gold font-display">Select Target for {selectedAction.name}</span>
-              </div>
-              <button
-                onClick={() => setSelectedAction(null)}
-                className="p-1 text-gray-400 hover:text-white rounded"
-              >
-                <X className="w-5 h-5" />
-              </button>
-            </div>
-
-            <div className="flex flex-wrap gap-2">
-              {selectedAction.availableTargets?.map((target) => (
-                <motion.button
-                  key={target.id}
-                  whileHover={{ scale: 1.05 }}
-                  whileTap={{ scale: 0.95 }}
-                  onClick={() => handleTargetSelect(target.id)}
-                  className="px-4 py-2 bg-red-500/20 hover:bg-red-500/30 
-                    text-red-400 border border-red-500/50 rounded-lg font-medium
-                    transition-colors"
+            {/* Backdrop */}
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              className="absolute inset-0 bg-black/70 backdrop-blur-sm"
+              onClick={() => setSelectedAction(null)}
+            />
+            
+            {/* Modal Content */}
+            <motion.div
+              initial={{ opacity: 0, scale: 0.95, y: 20 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.95, y: 20 }}
+              className="relative w-full max-w-md glass border border-coup-gold/30 rounded-2xl shadow-coup overflow-hidden"
+            >
+              {/* Header */}
+              <div className="flex items-center justify-between p-6 border-b border-coup-gray-light">
+                <div className="flex items-center gap-2">
+                  <Target className="w-5 h-5 text-coup-gold" />
+                  <h2 className="font-display text-xl text-coup-gold">Select Target for {selectedAction.name}</h2>
+                </div>
+                <button
+                  onClick={() => setSelectedAction(null)}
+                  className="p-2 text-gray-400 hover:text-white hover:bg-coup-gray rounded-lg transition-colors"
                 >
-                  {target.name}
-                </motion.button>
-              ))}
-            </div>
+                  <X className="w-5 h-5" />
+                </button>
+              </div>
+              
+              {/* Body */}
+              <div className="p-6">
+                <div className="flex flex-wrap gap-3">
+                  {selectedAction.availableTargets?.map((target) => (
+                    <motion.button
+                      key={target.id}
+                      whileHover={{ scale: 1.05 }}
+                      whileTap={{ scale: 0.95 }}
+                      onClick={() => handleTargetSelect(target.id)}
+                      className="px-6 py-3 bg-red-500/20 hover:bg-red-500/30 
+                        text-red-400 border border-red-500/50 rounded-lg font-medium
+                        transition-colors"
+                    >
+                      {target.name}
+                    </motion.button>
+                  ))}
+                </div>
+              </div>
+            </motion.div>
           </motion.div>
-        )}
-      </AnimatePresence>
+        </AnimatePresence>,
+        document.body
+      )}
     </div>
   )
 }
