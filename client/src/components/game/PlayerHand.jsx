@@ -1,6 +1,6 @@
 import { motion, AnimatePresence } from 'framer-motion'
-import { Coins, Sparkles, Crown } from 'lucide-react'
-import { useState, useEffect, useRef } from 'react'
+import { Coins, Sparkles, Crown, X, Shield } from 'lucide-react'
+import { useState, useEffect } from 'react'
 import { CHARACTERS } from '../../constants/gameConstants'
 
 // Card image paths
@@ -148,18 +148,16 @@ export default function PlayerHand({ player, isMyTurn }) {
 }
 
 function InfluenceCard({ card, index, isMyTurn, totalCards }) {
+  const [showDetails, setShowDetails] = useState(false)
   const charInfo = CHARACTERS[card.card]
   const cardImage = CARD_IMAGES[card.card]
-  
-  // Calculate rotation based on card position
-  const baseRotation = totalCards > 1 ? (index === 0 ? -5 : 5) : 0
 
   if (card.revealed) {
     // Revealed/Dead card
     return (
       <motion.div
-        initial={{ scale: 1, rotateZ: 0 }}
-        animate={{ scale: 0.92, rotateZ: baseRotation * 2 }}
+        initial={{ scale: 1 }}
+        animate={{ scale: 0.92 }}
         className="relative w-32 h-44 rounded-xl overflow-hidden"
         style={{ 
           filter: 'grayscale(80%) brightness(0.4)',
@@ -193,81 +191,217 @@ function InfluenceCard({ card, index, isMyTurn, totalCards }) {
     )
   }
 
-  // Active card with image
+  // Active card with image - straight vertical, hover moves up
+  return (
+    <>
+      <motion.div
+        initial={{ y: 50, opacity: 0 }}
+        animate={{ y: 0, opacity: 1 }}
+        whileHover={{ 
+          y: -12, 
+          scale: 1.03, 
+          transition: { type: 'spring', stiffness: 400, damping: 25 }
+        }}
+        whileTap={{ scale: 0.98 }}
+        onClick={() => setShowDetails(true)}
+        className="relative w-32 h-44 rounded-xl overflow-hidden cursor-pointer group"
+        style={{
+          boxShadow: isMyTurn 
+            ? '0 10px 40px rgba(212, 175, 55, 0.5), 0 0 80px rgba(212, 175, 55, 0.2)'
+            : '0 10px 40px rgba(0, 0, 0, 0.5)',
+        }}
+      >
+        {/* Card Image */}
+        <img
+          src={cardImage}
+          alt={charInfo?.name}
+          className="absolute inset-0 w-full h-full object-cover transition-transform duration-500 
+            group-hover:scale-105"
+          draggable={false}
+        />
+
+        {/* Animated shine effect */}
+        <motion.div 
+          className="absolute inset-0 bg-gradient-to-tr from-transparent via-white/20 to-white/30 
+            pointer-events-none"
+          initial={{ x: '-100%', opacity: 0 }}
+          whileHover={{ x: '100%', opacity: 1 }}
+          transition={{ duration: 0.6 }}
+        />
+
+        {/* Hover hint */}
+        <div className="absolute bottom-0 left-0 right-0 p-2 bg-gradient-to-t from-black/60 to-transparent
+          opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+          <p className="text-white/80 text-[10px] text-center">Click for details</p>
+        </div>
+
+        {/* Border glow */}
+        <motion.div 
+          className="absolute inset-0 rounded-xl border-2 border-transparent 
+            group-hover:border-coup-gold/60 transition-all duration-300 pointer-events-none"
+          whileHover={{
+            boxShadow: 'inset 0 0 30px rgba(212, 175, 55, 0.3)'
+          }}
+        />
+
+        {/* Turn glow effect */}
+        {isMyTurn && (
+          <motion.div
+            animate={{ 
+              boxShadow: [
+                'inset 0 0 20px rgba(212, 175, 55, 0.2)',
+                'inset 0 0 50px rgba(212, 175, 55, 0.5)',
+                'inset 0 0 20px rgba(212, 175, 55, 0.2)'
+              ]
+            }}
+            transition={{ duration: 2, repeat: Infinity }}
+            className="absolute inset-0 rounded-xl pointer-events-none"
+          />
+        )}
+        
+        {/* Outer glow for turn */}
+        {isMyTurn && (
+          <motion.div
+            animate={{ opacity: [0.5, 1, 0.5] }}
+            transition={{ duration: 2, repeat: Infinity }}
+            className="absolute -inset-1 rounded-2xl bg-coup-gold/20 blur-md -z-10"
+          />
+        )}
+      </motion.div>
+
+      {/* Card Details Modal */}
+      <AnimatePresence>
+        {showDetails && (
+          <CardDetailsModal 
+            card={card} 
+            charInfo={charInfo} 
+            cardImage={cardImage}
+            onClose={() => setShowDetails(false)} 
+          />
+        )}
+      </AnimatePresence>
+    </>
+  )
+}
+
+// Card Details Modal Component
+function CardDetailsModal({ card, charInfo, cardImage, onClose }) {
   return (
     <motion.div
-      initial={{ y: 50, opacity: 0, rotateZ: 0 }}
-      animate={{ y: 0, opacity: 1, rotateZ: baseRotation }}
-      whileHover={{ 
-        y: -15, 
-        scale: 1.08, 
-        rotateZ: 0,
-        transition: { type: 'spring', stiffness: 300, damping: 20 }
-      }}
-      className="relative w-32 h-44 rounded-xl overflow-hidden cursor-pointer group card-3d"
-      style={{
-        boxShadow: isMyTurn 
-          ? '0 10px 40px rgba(212, 175, 55, 0.5), 0 0 80px rgba(212, 175, 55, 0.2)'
-          : '0 10px 40px rgba(0, 0, 0, 0.5)',
-      }}
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      onClick={onClose}
+      className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm"
     >
-      {/* Card Image */}
-      <img
-        src={cardImage}
-        alt={charInfo?.name}
-        className="absolute inset-0 w-full h-full object-cover transition-transform duration-500 
-          group-hover:scale-110"
-        draggable={false}
-      />
-
-      {/* Animated shine effect */}
-      <motion.div 
-        className="absolute inset-0 bg-gradient-to-tr from-transparent via-white/20 to-white/30 
-          pointer-events-none"
-        initial={{ x: '-100%', opacity: 0 }}
-        whileHover={{ x: '100%', opacity: 1 }}
-        transition={{ duration: 0.6 }}
-      />
-
-      {/* Character name overlay at bottom */}
-      <div className="absolute bottom-0 left-0 right-0 p-2 bg-gradient-to-t from-black/80 to-transparent">
-        <p className="text-white text-xs font-display text-center tracking-wider uppercase">
-          {charInfo?.name}
-        </p>
-      </div>
-
-      {/* Border glow */}
-      <motion.div 
-        className="absolute inset-0 rounded-xl border-2 border-transparent 
-          group-hover:border-coup-gold/60 transition-all duration-300 pointer-events-none"
-        whileHover={{
-          boxShadow: 'inset 0 0 30px rgba(212, 175, 55, 0.3)'
-        }}
-      />
-
-      {/* Turn glow effect */}
-      {isMyTurn && (
-        <motion.div
-          animate={{ 
-            boxShadow: [
-              'inset 0 0 20px rgba(212, 175, 55, 0.2)',
-              'inset 0 0 50px rgba(212, 175, 55, 0.5)',
-              'inset 0 0 20px rgba(212, 175, 55, 0.2)'
-            ]
-          }}
-          transition={{ duration: 2, repeat: Infinity }}
-          className="absolute inset-0 rounded-xl pointer-events-none"
-        />
-      )}
-      
-      {/* Outer glow for turn */}
-      {isMyTurn && (
-        <motion.div
-          animate={{ opacity: [0.5, 1, 0.5] }}
-          transition={{ duration: 2, repeat: Infinity }}
-          className="absolute -inset-1 rounded-2xl bg-coup-gold/20 blur-md -z-10"
-        />
-      )}
+      <motion.div
+        initial={{ scale: 0.5, rotateY: -180, opacity: 0 }}
+        animate={{ scale: 1, rotateY: 0, opacity: 1 }}
+        exit={{ scale: 0.5, rotateY: 180, opacity: 0 }}
+        transition={{ type: 'spring', stiffness: 200, damping: 20 }}
+        onClick={(e) => e.stopPropagation()}
+        className="relative max-w-md w-full mx-4"
+      >
+        {/* Glow background */}
+        <div className={`absolute -inset-4 bg-gradient-to-r ${charInfo?.gradient} opacity-30 blur-2xl rounded-3xl`} />
+        
+        <div className="relative bg-coup-darker/95 border-2 border-coup-gold/50 rounded-2xl overflow-hidden shadow-2xl">
+          {/* Header with card image */}
+          <div className="relative h-64 overflow-hidden">
+            <motion.img
+              src={cardImage}
+              alt={charInfo?.name}
+              className="w-full h-full object-cover"
+              initial={{ scale: 1.2 }}
+              animate={{ scale: 1 }}
+              transition={{ duration: 0.5 }}
+            />
+            <div className="absolute inset-0 bg-gradient-to-t from-coup-darker via-coup-darker/50 to-transparent" />
+            
+            {/* Close button */}
+            <motion.button
+              whileHover={{ scale: 1.1, rotate: 90 }}
+              whileTap={{ scale: 0.9 }}
+              onClick={onClose}
+              className="absolute top-4 right-4 w-10 h-10 bg-black/50 rounded-full flex items-center justify-center
+                text-white hover:bg-black/70 transition-colors"
+            >
+              <X className="w-5 h-5" />
+            </motion.button>
+            
+            {/* Character name */}
+            <motion.div 
+              className="absolute bottom-4 left-0 right-0 text-center"
+              initial={{ y: 20, opacity: 0 }}
+              animate={{ y: 0, opacity: 1 }}
+              transition={{ delay: 0.2 }}
+            >
+              <h2 className={`text-4xl font-display font-bold bg-gradient-to-r ${charInfo?.gradient} 
+                bg-clip-text text-transparent drop-shadow-lg`}>
+                {charInfo?.name}
+              </h2>
+            </motion.div>
+          </div>
+          
+          {/* Card abilities */}
+          <div className="p-6 space-y-4">
+            {/* Action ability */}
+            {charInfo?.action && (
+              <motion.div
+                initial={{ x: -30, opacity: 0 }}
+                animate={{ x: 0, opacity: 1 }}
+                transition={{ delay: 0.3 }}
+                className="flex items-start gap-4 p-4 bg-coup-gray/50 rounded-xl border border-coup-gold/20"
+              >
+                <div className={`w-12 h-12 rounded-xl bg-gradient-to-r ${charInfo?.gradient} 
+                  flex items-center justify-center flex-shrink-0`}>
+                  <Sparkles className="w-6 h-6 text-white" />
+                </div>
+                <div>
+                  <h3 className="text-coup-gold font-display font-semibold text-lg">Action: {charInfo?.actionName}</h3>
+                  <p className="text-gray-400 text-sm mt-1">{charInfo?.actionDescription}</p>
+                </div>
+              </motion.div>
+            )}
+            
+            {/* Block ability */}
+            {charInfo?.counteraction && (
+              <motion.div
+                initial={{ x: -30, opacity: 0 }}
+                animate={{ x: 0, opacity: 1 }}
+                transition={{ delay: 0.4 }}
+                className="flex items-start gap-4 p-4 bg-coup-gray/50 rounded-xl border border-coup-gold/20"
+              >
+                <div className="w-12 h-12 rounded-xl bg-gradient-to-r from-red-500 to-red-700 
+                  flex items-center justify-center flex-shrink-0">
+                  <Shield className="w-6 h-6 text-white" />
+                </div>
+                <div>
+                  <h3 className="text-red-400 font-display font-semibold text-lg">Block</h3>
+                  <p className="text-gray-400 text-sm mt-1">{charInfo?.counteraction}</p>
+                </div>
+              </motion.div>
+            )}
+            
+            {/* Special note for Contessa */}
+            {!charInfo?.action && (
+              <motion.div
+                initial={{ x: -30, opacity: 0 }}
+                animate={{ x: 0, opacity: 1 }}
+                transition={{ delay: 0.3 }}
+                className="p-4 bg-red-500/10 rounded-xl border border-red-500/30"
+              >
+                <p className="text-red-400 text-sm text-center italic">
+                  The Contessa has no action but can block assassinations
+                </p>
+              </motion.div>
+            )}
+          </div>
+          
+          {/* Decorative bottom */}
+          <div className={`h-1 bg-gradient-to-r ${charInfo?.gradient}`} />
+        </div>
+      </motion.div>
     </motion.div>
   )
 }

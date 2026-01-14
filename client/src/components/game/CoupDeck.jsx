@@ -139,19 +139,24 @@ export default function CoupDeck({ deckSize }) {
         </motion.div>
       </div>
       
-      {/* Card count badge */}
+      {/* Card count badge - prominent display */}
       <motion.div 
-        className="absolute -bottom-8 left-1/2 -translate-x-1/2"
+        className="absolute -bottom-12 left-1/2 -translate-x-1/2"
         initial={{ opacity: 0, y: 10 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.5 }}
       >
-        <div className="flex items-center gap-2 bg-coup-darker/90 border border-coup-gold/30 
-          rounded-full px-3 py-1 shadow-lg">
-          <div className="w-2 h-2 rounded-full bg-coup-gold animate-pulse" />
-          <span className="text-xs text-gray-400">
-            <span className="text-coup-gold font-semibold">{deckSize}</span> remaining
-          </span>
+        <div className="flex flex-col items-center gap-1 bg-coup-darker/95 border-2 border-coup-gold/50 
+          rounded-xl px-4 py-2 shadow-lg backdrop-blur-sm">
+          <motion.span 
+            key={deckSize}
+            initial={{ scale: 1.3 }}
+            animate={{ scale: 1 }}
+            className="text-2xl font-bold text-coup-gold font-display"
+          >
+            {deckSize}
+          </motion.span>
+          <span className="text-[10px] text-gray-400 uppercase tracking-wider">Cards Left</span>
         </div>
       </motion.div>
     </motion.div>
