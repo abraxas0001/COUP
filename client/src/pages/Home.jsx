@@ -64,14 +64,14 @@ export default function Home() {
   return (
     <div className="min-h-screen flex flex-col items-center justify-center px-4 py-12 relative"
       style={{
-        backgroundImage: 'url(/images/Screenshot%202026-01-14%20081637.png)',
+        backgroundImage: 'url(/images/Screenshot%202026-01-14%20092824.png)',
         backgroundSize: 'cover',
         backgroundPosition: 'center',
         backgroundRepeat: 'no-repeat'
       }}
     >
       {/* Background overlay for better text readability */}
-      <div className="absolute inset-0 bg-black/40 pointer-events-none" style={{ zIndex: 0 }} />
+      <div className="absolute inset-0 bg-gradient-to-b from-black/60 via-black/50 to-black/70 pointer-events-none" style={{ zIndex: 0 }} />
       
       {/* Content wrapper with higher z-index */}
       <div className="relative z-10 flex flex-col items-center justify-center w-full">
@@ -89,7 +89,7 @@ export default function Home() {
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ delay: 0.3 }}
-          className="text-gray-400 text-lg mt-6 max-w-md mx-auto"
+          className="text-gray-300 text-lg mt-6 max-w-md mx-auto drop-shadow-lg"
         >
           The ultimate game of bluff and deception. 
           Manipulate, deceive, and eliminate your way to power.
@@ -117,7 +117,7 @@ export default function Home() {
               </svg>
               Waking up server...
             </div>
-            <p className="text-xs text-gray-500 text-center max-w-xs">
+            <p className="text-xs text-gray-400 text-center max-w-xs drop-shadow-md">
               {error || 'Free hosting spins down after inactivity. First connection may take 60-90 seconds.'}
             </p>
             <button
@@ -188,11 +188,11 @@ export default function Home() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.8 + i * 0.1 }}
-            className="glass border border-coup-gold/20 rounded-xl p-6 text-center"
+            className="glass border border-coup-gold/20 rounded-xl p-6 text-center backdrop-blur-md"
           >
             <feature.icon className="w-8 h-8 text-coup-gold mx-auto mb-3" />
             <h3 className="font-display text-coup-gold mb-2">{feature.title}</h3>
-            <p className="text-gray-500 text-sm">{feature.desc}</p>
+            <p className="text-gray-400 text-sm">{feature.desc}</p>
           </motion.div>
         ))}
       </motion.div>
@@ -327,7 +327,7 @@ export default function Home() {
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ delay: 1 }}
-        className="mt-16 text-center text-gray-600 text-sm"
+        className="mt-16 text-center text-gray-400 text-sm drop-shadow-md"
       >
         <p>A digital adaptation of the card game COUP</p>
       </motion.footer>
