@@ -90,14 +90,25 @@ export default function Home() {
         transition={{ delay: 0.4 }}
         className="mb-8"
       >
-        <div className={`flex items-center gap-2 px-4 py-2 rounded-full text-sm ${
-          isConnected 
-            ? 'bg-green-500/10 text-green-400 border border-green-500/30' 
-            : 'bg-red-500/10 text-red-400 border border-red-500/30'
-        }`}>
-          <div className={`w-2 h-2 rounded-full ${isConnected ? 'bg-green-400' : 'bg-red-400'} animate-pulse`} />
-          {isConnected ? 'Connected to server' : 'Connecting...'}
-        </div>
+        {isConnected ? (
+          <div className="flex items-center gap-2 px-4 py-2 rounded-full text-sm bg-green-500/10 text-green-400 border border-green-500/30">
+            <div className="w-2 h-2 rounded-full bg-green-400 animate-pulse" />
+            Connected to server
+          </div>
+        ) : (
+          <div className="flex flex-col items-center gap-3">
+            <div className="flex items-center gap-2 px-4 py-2 rounded-full text-sm bg-yellow-500/10 text-yellow-400 border border-yellow-500/30">
+              <svg className="w-4 h-4 animate-spin" viewBox="0 0 24 24" fill="none">
+                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
+              </svg>
+              Waking up server...
+            </div>
+            <p className="text-xs text-gray-500 text-center max-w-xs">
+              Free hosting spins down after inactivity. First connection may take up to 60 seconds.
+            </p>
+          </div>
+        )}
       </motion.div>
 
       {/* Main Actions */}

@@ -28,18 +28,21 @@ export const useGameStore = create((set, get) => ({
   initializeSocket: () => {
     if (get().socket) return
     
+    // Show loading state while connecting
+    set({ isLoading: true, error: 'Waking up server... This may take up to 60 seconds on first load.' })
+    
     const socket = io(SOCKET_URL, {
       transports: ['websocket', 'polling'],
       reconnection: true,
-      reconnectionAttempts: 10,
-      reconnectionDelay: 1000,
-      reconnectionDelayMax: 5000,
-      timeout: 10000,
+      reconnectionAttempts: 15,
+      reconnectionDelay: 2000,
+      reconnectionDelayMax: 10000,
+      timeout: 60000, // 60 second timeout for Render cold starts
     })
     
     socket.on('connect', () => {
       console.log('✅ Connected to server')
-      set({ isConnected: true, error: null })
+      set({ isConnected: true, error: null, isLoading: false })
     })
     
     socket.on('disconnect', () => {
@@ -49,7 +52,7 @@ export const useGameStore = create((set, get) => ({
     
     socket.on('connect_error', (error) => {
       console.error('⚠️ Connection error:', error)
-      set({ error: 'Failed to connect to server. Backend may be starting up...' })
+      set({ error: 'Connecting to server... Please wait, the server is waking up.' })
     })
     
     // Lobby events
