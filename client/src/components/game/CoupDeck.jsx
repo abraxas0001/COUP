@@ -1,15 +1,21 @@
 import { motion } from 'framer-motion'
+import { useState } from 'react'
+import InstructionsModal from './InstructionsModal'
 
 export default function CoupDeck({ deckSize }) {
+  const [showInstructions, setShowInstructions] = useState(false)
+  
   return (
-    <motion.div 
-      className="relative"
-      initial={{ scale: 0.8, opacity: 0 }}
-      animate={{ scale: 1, opacity: 1 }}
-      transition={{ duration: 0.6, delay: 0.2 }}
-    >
+    <div className="flex flex-col items-center gap-3">
+      {/* Clickable Deck */}
+      <motion.button
+        onClick={() => setShowInstructions(true)}
+        className="relative cursor-pointer focus:outline-none group"
+        whileHover={{ scale: 1.05 }}
+        whileTap={{ scale: 0.98 }}
+      >
       {/* Ambient glow */}
-      <div className="absolute inset-0 -m-6 bg-coup-purple/20 blur-2xl rounded-full" />
+      <div className="absolute inset-0 -m-6 bg-coup-purple/20 blur-2xl rounded-full group-hover:bg-coup-purple/40 transition-colors" />
       
       {/* Deck stack - creates 3D effect */}
       <div className="relative">
@@ -46,7 +52,6 @@ export default function CoupDeck({ deckSize }) {
           className="relative w-[100px] h-[140px] z-10"
           whileHover={{ 
             y: -5, 
-            rotateZ: 2,
             transition: { duration: 0.3 }
           }}
         >
@@ -139,27 +144,41 @@ export default function CoupDeck({ deckSize }) {
         </motion.div>
       </div>
       
-      {/* Card count badge - prominent display */}
+      {/* Card count text - below deck */}
       <motion.div 
-        className="absolute -bottom-12 left-1/2 -translate-x-1/2"
         initial={{ opacity: 0, y: 10 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.5 }}
+        className="text-center mt-2"
       >
-        <div className="flex flex-col items-center gap-1 bg-coup-darker/95 border-2 border-coup-gold/50 
-          rounded-xl px-4 py-2 shadow-lg backdrop-blur-sm">
-          <motion.span 
-            key={deckSize}
-            initial={{ scale: 1.3 }}
-            animate={{ scale: 1 }}
-            className="text-2xl font-bold text-coup-gold font-display"
-          >
-            {deckSize}
-          </motion.span>
-          <span className="text-[10px] text-gray-400 uppercase tracking-wider">Cards Left</span>
-        </div>
+        <p className="text-xs text-gray-500 uppercase tracking-wider">Cards Left</p>
+        <motion.p 
+          key={deckSize}
+          initial={{ scale: 1.3 }}
+          animate={{ scale: 1 }}
+          className="text-lg font-bold text-coup-gold font-display"
+        >
+          {deckSize}
+        </motion.p>
       </motion.div>
-    </motion.div>
+      
+      {/* Tooltip hint */}
+      <motion.div
+        initial={{ opacity: 0 }}
+        whileHover={{ opacity: 1 }}
+        className="absolute -bottom-6 left-1/2 -translate-x-1/2 text-[10px] text-coup-gold/60 
+          whitespace-nowrap pointer-events-none"
+      >
+        Click for instructions
+      </motion.div>
+      
+      {/* Instructions Modal */}
+      <InstructionsModal 
+        isOpen={showInstructions} 
+        onClose={() => setShowInstructions(false)} 
+      />
+    </motion.button>
+    </div>
   )
 }
 

@@ -292,41 +292,42 @@ function CardDetailsModal({ card, charInfo, cardImage, onClose }) {
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
       onClick={onClose}
-      className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm"
+      className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-lg"
     >
       <motion.div
-        initial={{ scale: 0.5, rotateY: -180, opacity: 0 }}
-        animate={{ scale: 1, rotateY: 0, opacity: 1 }}
-        exit={{ scale: 0.5, rotateY: 180, opacity: 0 }}
-        transition={{ type: 'spring', stiffness: 200, damping: 20 }}
+        initial={{ scale: 0.3, opacity: 0, rotateY: -180 }}
+        animate={{ scale: 1, opacity: 1, rotateY: 0 }}
+        exit={{ scale: 0.3, opacity: 0, rotateY: 180 }}
+        transition={{ type: 'spring', stiffness: 150, damping: 20 }}
         onClick={(e) => e.stopPropagation()}
-        className="relative max-w-md w-full mx-4"
+        className="relative w-full max-w-sm mx-4"
+        style={{ perspective: '1000px' }}
       >
         {/* Glow background */}
-        <div className={`absolute -inset-4 bg-gradient-to-r ${charInfo?.gradient} opacity-30 blur-2xl rounded-3xl`} />
+        <div className={`absolute -inset-6 bg-gradient-to-r ${charInfo?.gradient} opacity-40 blur-3xl rounded-3xl`} />
         
         <div className="relative bg-coup-darker/95 border-2 border-coup-gold/50 rounded-2xl overflow-hidden shadow-2xl">
           {/* Header with card image */}
-          <div className="relative h-64 overflow-hidden">
+          <div className="relative h-80 overflow-hidden">
             <motion.img
               src={cardImage}
               alt={charInfo?.name}
               className="w-full h-full object-cover"
-              initial={{ scale: 1.2 }}
+              initial={{ scale: 1.3 }}
               animate={{ scale: 1 }}
-              transition={{ duration: 0.5 }}
+              transition={{ duration: 0.6 }}
             />
-            <div className="absolute inset-0 bg-gradient-to-t from-coup-darker via-coup-darker/50 to-transparent" />
+            <div className="absolute inset-0 bg-gradient-to-t from-coup-darker via-coup-darker/40 to-transparent" />
             
             {/* Close button */}
             <motion.button
-              whileHover={{ scale: 1.1, rotate: 90 }}
-              whileTap={{ scale: 0.9 }}
+              whileHover={{ scale: 1.15, rotate: 90 }}
+              whileTap={{ scale: 0.85 }}
               onClick={onClose}
-              className="absolute top-4 right-4 w-10 h-10 bg-black/50 rounded-full flex items-center justify-center
-                text-white hover:bg-black/70 transition-colors"
+              className="absolute top-4 right-4 w-12 h-12 bg-black/60 backdrop-blur-sm rounded-full flex items-center justify-center
+                text-white hover:bg-black/80 transition-colors border border-white/20"
             >
-              <X className="w-5 h-5" />
+              <X className="w-6 h-6" />
             </motion.button>
             
             {/* Character name */}
@@ -336,30 +337,30 @@ function CardDetailsModal({ card, charInfo, cardImage, onClose }) {
               animate={{ y: 0, opacity: 1 }}
               transition={{ delay: 0.2 }}
             >
-              <h2 className={`text-4xl font-display font-bold bg-gradient-to-r ${charInfo?.gradient} 
-                bg-clip-text text-transparent drop-shadow-lg`}>
+              <h2 className={`text-5xl font-display font-bold bg-gradient-to-r ${charInfo?.gradient} 
+                bg-clip-text text-transparent drop-shadow-2xl`}>
                 {charInfo?.name}
               </h2>
             </motion.div>
           </div>
           
           {/* Card abilities */}
-          <div className="p-6 space-y-4">
+          <div className="p-8 space-y-5 max-h-96 overflow-y-auto">
             {/* Action ability */}
             {charInfo?.action && (
               <motion.div
                 initial={{ x: -30, opacity: 0 }}
                 animate={{ x: 0, opacity: 1 }}
                 transition={{ delay: 0.3 }}
-                className="flex items-start gap-4 p-4 bg-coup-gray/50 rounded-xl border border-coup-gold/20"
+                className="flex items-start gap-4 p-5 bg-coup-gray/60 rounded-xl border-l-4 border-coup-gold"
               >
-                <div className={`w-12 h-12 rounded-xl bg-gradient-to-r ${charInfo?.gradient} 
-                  flex items-center justify-center flex-shrink-0`}>
-                  <Sparkles className="w-6 h-6 text-white" />
+                <div className={`w-14 h-14 rounded-xl bg-gradient-to-r ${charInfo?.gradient} 
+                  flex items-center justify-center flex-shrink-0 shadow-lg`}>
+                  <Sparkles className="w-7 h-7 text-white" />
                 </div>
-                <div>
-                  <h3 className="text-coup-gold font-display font-semibold text-lg">Action: {charInfo?.actionName}</h3>
-                  <p className="text-gray-400 text-sm mt-1">{charInfo?.actionDescription}</p>
+                <div className="flex-1">
+                  <h3 className="text-coup-gold font-display font-bold text-xl">Action: {charInfo?.actionName}</h3>
+                  <p className="text-gray-300 text-sm mt-2">{charInfo?.actionDescription}</p>
                 </div>
               </motion.div>
             )}
@@ -370,15 +371,15 @@ function CardDetailsModal({ card, charInfo, cardImage, onClose }) {
                 initial={{ x: -30, opacity: 0 }}
                 animate={{ x: 0, opacity: 1 }}
                 transition={{ delay: 0.4 }}
-                className="flex items-start gap-4 p-4 bg-coup-gray/50 rounded-xl border border-coup-gold/20"
+                className="flex items-start gap-4 p-5 bg-red-500/10 rounded-xl border-l-4 border-red-500"
               >
-                <div className="w-12 h-12 rounded-xl bg-gradient-to-r from-red-500 to-red-700 
-                  flex items-center justify-center flex-shrink-0">
-                  <Shield className="w-6 h-6 text-white" />
+                <div className="w-14 h-14 rounded-xl bg-gradient-to-r from-red-600 to-red-700 
+                  flex items-center justify-center flex-shrink-0 shadow-lg">
+                  <Shield className="w-7 h-7 text-white" />
                 </div>
-                <div>
-                  <h3 className="text-red-400 font-display font-semibold text-lg">Block</h3>
-                  <p className="text-gray-400 text-sm mt-1">{charInfo?.counteraction}</p>
+                <div className="flex-1">
+                  <h3 className="text-red-400 font-display font-bold text-xl">Block</h3>
+                  <p className="text-gray-300 text-sm mt-2">{charInfo?.counteraction}</p>
                 </div>
               </motion.div>
             )}
@@ -389,17 +390,18 @@ function CardDetailsModal({ card, charInfo, cardImage, onClose }) {
                 initial={{ x: -30, opacity: 0 }}
                 animate={{ x: 0, opacity: 1 }}
                 transition={{ delay: 0.3 }}
-                className="p-4 bg-red-500/10 rounded-xl border border-red-500/30"
+                className="p-5 bg-red-500/15 rounded-xl border border-red-500/40 text-center"
               >
-                <p className="text-red-400 text-sm text-center italic">
-                  The Contessa has no action but can block assassinations
+                <p className="text-red-300 text-sm italic">
+                  💎 The Contessa is pure defense with no offensive action.<br/>
+                  She blocks assassinations perfectly but cannot take coins.
                 </p>
               </motion.div>
             )}
           </div>
           
           {/* Decorative bottom */}
-          <div className={`h-1 bg-gradient-to-r ${charInfo?.gradient}`} />
+          <div className={`h-1.5 bg-gradient-to-r ${charInfo?.gradient}`} />
         </div>
       </motion.div>
     </motion.div>

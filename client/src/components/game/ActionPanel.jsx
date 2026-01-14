@@ -9,12 +9,10 @@ import {
   Anchor, 
   ArrowLeftRight,
   Target,
-  X,
-  HelpCircle
+  X
 } from 'lucide-react'
 import { useGameStore } from '../../store/gameStore'
 import { CHARACTERS } from '../../constants/gameConstants'
-import InstructionsModal from './InstructionsModal'
 
 const ACTION_ICONS = {
   income: Coins,
@@ -30,7 +28,6 @@ export default function ActionPanel({ actions, playerCoins }) {
   const { performAction } = useGameStore()
   const [selectedAction, setSelectedAction] = useState(null)
   const [isPerforming, setIsPerforming] = useState(false)
-  const [showInstructions, setShowInstructions] = useState(false)
 
   const handleActionClick = (action) => {
     if (action.requiresTarget && action.availableTargets?.length > 0) {
@@ -57,33 +54,14 @@ export default function ActionPanel({ actions, playerCoins }) {
 
   return (
     <div className="space-y-4">
-      <div className="flex items-center gap-3 text-sm text-gray-400">
+      <div className="flex items-center gap-2 text-sm text-gray-400">
         <span>Choose your action:</span>
         {playerCoins >= 10 && (
           <span className="text-red-400 font-semibold animate-pulse">
             You must Coup! (10+ coins)
           </span>
         )}
-        
-        {/* Instructions Button */}
-        <motion.button
-          whileHover={{ scale: 1.05 }}
-          whileTap={{ scale: 0.95 }}
-          onClick={() => setShowInstructions(true)}
-          className="ml-auto flex items-center gap-1.5 px-3 py-1.5 bg-coup-gold/20 
-            hover:bg-coup-gold/30 border border-coup-gold/40 rounded-lg 
-            text-coup-gold text-xs font-medium transition-colors"
-        >
-          <HelpCircle className="w-4 h-4" />
-          <span>Instructions</span>
-        </motion.button>
       </div>
-
-      {/* Instructions Modal */}
-      <InstructionsModal 
-        isOpen={showInstructions} 
-        onClose={() => setShowInstructions(false)} 
-      />
 
       {/* Action Buttons */}
       <div className="flex flex-wrap gap-2">
