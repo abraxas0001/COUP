@@ -90,24 +90,24 @@ export default function GameTable({ gameState, myId }) {
 
       {/* Center Table Area - Deck, Treasury & Action Display */}
       <div className="flex justify-center items-center py-8 relative z-10">
-        {/* Treasury on left */}
-        <div className="flex items-center">
+        {/* Treasury on left (slightly shifted right) */}
+        <div className="flex items-center ml-8 md:ml-12">
           <Treasury gameState={gameState} previousState={previousState} />
           {/* Golden thread connecting Treasury to Deck */}
-          <div className="w-12 md:w-20 h-[2px] bg-gradient-to-r from-coup-gold/60 via-coup-gold to-coup-gold/60 
-            shadow-[0_0_10px_rgba(212,175,55,0.5)]" />
+          <div className="w-16 md:w-28 h-[1px] bg-gradient-to-r from-coup-gold/60 via-coup-gold to-coup-gold/60 
+            shadow-[0_0_8px_rgba(212,175,55,0.45)]" />
         </div>
         
         {/* Deck in center - shifted right to align below player cards */}
-        <div className="ml-16 md:ml-24">
+        <div className="ml-20 md:ml-28">
           <CoupDeck deckSize={deckSize} />
         </div>
         
         {/* Action Display on right with connecting thread */}
         <div className="flex items-center">
           {/* Golden thread connecting Deck to Action Display */}
-          <div className="w-12 md:w-20 h-[2px] bg-gradient-to-r from-coup-gold/60 via-coup-gold to-coup-gold/60 
-            shadow-[0_0_10px_rgba(212,175,55,0.5)]" />
+          <div className="w-16 md:w-28 h-[1px] bg-gradient-to-r from-coup-gold/60 via-coup-gold to-coup-gold/60 
+            shadow-[0_0_8px_rgba(212,175,55,0.45)]" />
           
           {/* Action Display - fixed width to prevent layout shift */}
           <div className="w-56 md:w-72 min-h-[140px] flex items-center justify-center 

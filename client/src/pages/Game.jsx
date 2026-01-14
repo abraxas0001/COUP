@@ -12,6 +12,7 @@ import InfluenceLossModal from '../components/game/InfluenceLossModal'
 import GameOverModal from '../components/game/GameOverModal'
 import PhaseIndicator from '../components/game/PhaseIndicator'
 import { Loader2 } from 'lucide-react'
+import MusicPlayer from '../components/MusicPlayer'
 
 export default function Game() {
   const { lobbyCode } = useParams()
@@ -103,6 +104,8 @@ export default function Game() {
 
   return (
     <div className="min-h-screen bg-coup-dark game-table table-spotlight flex flex-col overflow-hidden relative">
+      {/* Background music player */}
+      <MusicPlayer />
       {/* Animated background particles */}
       <div className="absolute inset-0 pointer-events-none overflow-hidden">
         <div className="absolute top-20 left-10 w-2 h-2 bg-coup-gold/20 rounded-full animate-float" style={{ animationDelay: '0s' }} />
