@@ -66,6 +66,14 @@ io.on('connection', (socket) => {
   console.log(`Player connected: ${socket.id}`);
 
   // ========================
+  // HEARTBEAT / KEEP-ALIVE
+  // ========================
+  
+  socket.on('ping', (data) => {
+    socket.emit('pong', { timestamp: Date.now() });
+  });
+
+  // ========================
   // LOBBY EVENTS
   // ========================
 
@@ -325,7 +333,23 @@ io.on('connection', (socket) => {
 
 // API Routes
 app.get('/api/health', (req, res) => {
-  res.json({ status: 'ok', timestamp: Date.now() });
+  res.json({ 
+    status: 'ok', 
+    timestamp: Date.now(),
+    uptime: process.uptime(),
+    connections: io.engine.clientsCount,
+    lobbies: lobbyManager.lobbies.size,
+    games: gameManager.games.size
+  });
+});
+
+app.get('/health', (req, res) => {
+  res.json({ 
+    status: 'ok', 
+    timestamp: Date.now(),
+    uptime: Math.floor(process.uptime()),
+    message: 'Server is alive'
+  });
 });
 
 // Catch-all for SPA
@@ -353,4 +377,47 @@ httpServer.listen(PORT, () => {
 ║                                                           ║
 ╚═══════════════════════════════════════════════════════════╝
   `);
+  
+  // Keep-alive mechanism to prevent Render from sleeping
+  if (process.env.NODE_ENV === 'production') {
+    const KEEP_ALIVE_INTERVAL = 10 * 60 * 1000; // 10 minutes
+    
+    setInterval(async () => {
+      try {
+        const timestamp = new Date().toISOString();
+        console.log(`⏰ Keep-alive ping at ${timestamp}`);
+        console.log(`📊 Active connections: ${io.engine.clientsCount}`);
+        console.log(`🎮 Active lobbies: ${lobbyManager.lobbies.size}`);
+        console.log(`🎯 Active games: ${gameManager.games.size}`);
+        
+        // Self-ping to keep the server awake
+        const https = await import('https');
+        const options = {
+          hostname: 'coup-erky.onrender.com',
+          path: '/health',
+          method: 'GET',
+          timeout: 5000
+        };
+        
+        const req = https.request(options, (res) => {
+          console.log(`✅ Self-ping successful: ${res.statusCode}`);
+        });
+        
+        req.on('error', (error) => {
+          console.error(`⚠️ Self-ping failed:`, error.message);
+        });
+        
+        req.on('timeout', () => {
+          req.destroy();
+          console.error(`⚠️ Self-ping timeout`);
+        });
+        
+        req.end();
+      } catch (error) {
+        console.error('❌ Keep-alive error:', error.message);
+      }
+    }, KEEP_ALIVE_INTERVAL);
+    
+    console.log('🔄 Keep-alive mechanism enabled (10 min intervals)');
+  }
 });

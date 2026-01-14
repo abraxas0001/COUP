@@ -58,17 +58,40 @@ export const useGameStore = create((set, get) => ({
     socket.on('connect', () => {
       console.log('✅ Connected to server')
       set({ isConnected: true, error: null, isLoading: false })
+      
+      // Start heartbeat to keep server awake
+      const heartbeatInterval = setInterval(() => {
+        if (socket.connected) {
+          socket.emit('ping', { timestamp: Date.now() })
+        } else {
+          clearInterval(heartbeatInterval)
+        }
+      }, 5 * 60 * 1000) // Send heartbeat every 5 minutes
+      
+      // Store interval ID for cleanup
+      socket._heartbeatInterval = heartbeatInterval
     })
     
     socket.on('disconnect', (reason) => {
       console.log('❌ Disconnected from server:', reason)
       set({ isConnected: false })
+      
+      // Clear heartbeat interval
+      if (socket._heartbeatInterval) {
+        clearInterval(socket._heartbeatInterval)
+        socket._heartbeatInterval = null
+      }
+      
       if (reason === 'io server disconnect') {
         set({ error: 'Server disconnected. Attempting to reconnect...' })
         setTimeout(() => {
           socket.connect()
         }, 3000)
       }
+    })
+    
+    socket.on('pong', () => {
+      console.log('💓 Server heartbeat received')
     })
     
     socket.on('connect_error', (error) => {
