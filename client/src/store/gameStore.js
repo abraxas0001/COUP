@@ -29,15 +29,18 @@ export const useGameStore = create((set, get) => ({
     if (get().socket) return
     
     // Show loading state while connecting
-    set({ isLoading: true, error: 'Waking up server... This may take up to 60 seconds on first load.' })
+    set({ isLoading: true, error: 'Waking up server... This may take 60-90 seconds on first load.' })
     
     const socket = io(SOCKET_URL, {
       transports: ['websocket', 'polling'],
       reconnection: true,
-      reconnectionAttempts: 15,
-      reconnectionDelay: 2000,
-      reconnectionDelayMax: 10000,
-      timeout: 60000, // 60 second timeout for Render cold starts
+      reconnectionAttempts: 50, // Increased reconnection attempts
+      reconnectionDelay: 1000, // Start with 1 second
+      reconnectionDelayMax: 30000, // Up to 30 seconds between attempts
+      timeout: 120000, // 120 second timeout for Render cold starts
+      autoConnect: true,
+      forceNew: false,
+      multiplex: false,
     })
     
     socket.on('connect', () => {
@@ -45,14 +48,25 @@ export const useGameStore = create((set, get) => ({
       set({ isConnected: true, error: null, isLoading: false })
     })
     
-    socket.on('disconnect', () => {
-      console.log('❌ Disconnected from server')
+    socket.on('disconnect', (reason) => {
+      console.log('❌ Disconnected from server:', reason)
       set({ isConnected: false })
+      if (reason === 'io server disconnect') {
+        set({ error: 'Server disconnected. Attempting to reconnect...' })
+        setTimeout(() => {
+          socket.connect()
+        }, 3000)
+      }
     })
     
     socket.on('connect_error', (error) => {
       console.error('⚠️ Connection error:', error)
-      set({ error: 'Connecting to server... Please wait, the server is waking up.' })
+      set({ error: `Connecting to server... (Attempt in progress)` })
+    })
+    
+    socket.on('error', (error) => {
+      console.error('❌ Socket error:', error)
+      set({ error: 'Connection error. Server may be restarting. Please wait...' })
     })
     
     // Lobby events

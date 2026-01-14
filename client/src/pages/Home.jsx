@@ -62,16 +62,19 @@ export default function Home() {
   }
 
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center px-4 py-12 relative z-10"
+    <div className="min-h-screen flex flex-col items-center justify-center px-4 py-12 relative"
       style={{
-        backgroundImage: 'url(/images/Screenshot\ 2026-01-14\ 081637.png)',
+        backgroundImage: 'url(/images/Screenshot%202026-01-14%20081637.png)',
         backgroundSize: 'cover',
         backgroundPosition: 'center',
-        backgroundAttachment: 'fixed'
+        backgroundRepeat: 'no-repeat'
       }}
     >
       {/* Background overlay for better text readability */}
-      <div className="absolute inset-0 bg-black/50 -z-10" />
+      <div className="absolute inset-0 bg-black/40 pointer-events-none" style={{ zIndex: 0 }} />
+      
+      {/* Content wrapper with higher z-index */}
+      <div className="relative z-10 flex flex-col items-center justify-center w-full">
       
       {/* Hero Section */}
       <motion.div 
@@ -115,8 +118,19 @@ export default function Home() {
               Waking up server...
             </div>
             <p className="text-xs text-gray-500 text-center max-w-xs">
-              Free hosting spins down after inactivity. First connection may take up to 60 seconds.
+              {error || 'Free hosting spins down after inactivity. First connection may take 60-90 seconds.'}
             </p>
+            <button
+              onClick={() => {
+                const { socket } = useGameStore.getState()
+                if (socket) {
+                  socket.connect()
+                }
+              }}
+              className="text-xs px-3 py-1 border border-coup-gold/40 text-coup-gold/70 hover:text-coup-gold hover:border-coup-gold/70 rounded-lg transition-colors"
+            >
+              Retry Connection
+            </button>
           </div>
         )}
       </motion.div>
@@ -317,6 +331,8 @@ export default function Home() {
       >
         <p>A digital adaptation of the card game COUP</p>
       </motion.footer>
+      
+      </div>
     </div>
   )
 }
