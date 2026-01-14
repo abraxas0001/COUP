@@ -88,26 +88,26 @@ export default function GameTable({ gameState, myId }) {
         ))}
       </div>
 
-      {/* Center Table Area - Deck, Treasury & Action Display */}
+      {/* Center Table Area - Treasury, Deck & Action Display */}
       <div className="flex justify-center items-center py-8 relative z-10">
-        {/* Treasury shifted right to connect thread */}
-        <div className="flex items-center ml-24 md:ml-32">
+        {/* Treasury on left */}
+        <div className="flex items-center">
           <Treasury gameState={gameState} previousState={previousState} />
-          {/* Golden thread connecting Treasury to Deck */}
-          <div className="w-8 md:w-12 h-[1px] bg-gradient-to-r from-coup-gold/60 via-coup-gold to-coup-gold/60 
-            shadow-[0_0_8px_rgba(212,175,55,0.45)]" />
+          {/* Narrow golden thread connecting Treasury to Deck */}
+          <div className="w-24 md:w-40 h-[1px] bg-gradient-to-r from-coup-gold/50 via-coup-gold/80 to-coup-gold/50 
+            shadow-[0_0_6px_rgba(212,175,55,0.4)]" />
         </div>
         
-        {/* Deck in center */}
-        <div className="ml-0">
+        {/* Deck centered below user cards */}
+        <div className="mx-4">
           <CoupDeck deckSize={deckSize} />
         </div>
         
         {/* Action Display on right with connecting thread */}
         <div className="flex items-center">
-          {/* Golden thread connecting Deck to Action Display */}
-          <div className="w-16 md:w-28 h-[1px] bg-gradient-to-r from-coup-gold/60 via-coup-gold to-coup-gold/60 
-            shadow-[0_0_8px_rgba(212,175,55,0.45)]" />
+          {/* Narrow golden thread connecting Deck to Action Display */}
+          <div className="w-24 md:w-40 h-[1px] bg-gradient-to-r from-coup-gold/50 via-coup-gold/80 to-coup-gold/50 
+            shadow-[0_0_6px_rgba(212,175,55,0.4)]" />
           
           {/* Action Display - fixed width to prevent layout shift */}
           <div className="w-56 md:w-72 min-h-[140px] flex items-center justify-center 
