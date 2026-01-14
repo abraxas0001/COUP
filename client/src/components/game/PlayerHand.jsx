@@ -1,6 +1,7 @@
 import { motion, AnimatePresence } from 'framer-motion'
 import { Coins, Sparkles, Crown, X, Shield } from 'lucide-react'
 import { useState, useEffect } from 'react'
+import { createPortal } from 'react-dom'
 import { CHARACTERS } from '../../constants/gameConstants'
 
 // Card image paths
@@ -269,17 +270,18 @@ function InfluenceCard({ card, index, isMyTurn, totalCards }) {
         )}
       </motion.div>
 
-      {/* Card Details Modal */}
-      <AnimatePresence>
-        {showDetails && (
+      {/* Card Details Modal - using Portal to render at body level */}
+      {showDetails && createPortal(
+        <AnimatePresence>
           <CardDetailsModal 
             card={card} 
             charInfo={charInfo} 
             cardImage={cardImage}
             onClose={() => setShowDetails(false)} 
           />
-        )}
-      </AnimatePresence>
+        </AnimatePresence>,
+        document.body
+      )}
     </>
   )
 }

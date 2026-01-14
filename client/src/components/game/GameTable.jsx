@@ -88,32 +88,62 @@ export default function GameTable({ gameState, myId }) {
         ))}
       </div>
 
-      {/* Center Table Area - Deck & Treasury */}
-      <div className="flex justify-center items-center gap-12 md:gap-16 py-8 relative z-10">
+      {/* Center Table Area - Deck, Treasury & Action Display */}
+      <div className="flex justify-center items-center py-8 relative z-10">
         {/* Treasury on left */}
-        <Treasury gameState={gameState} previousState={previousState} />
+        <div className="flex items-center">
+          <Treasury gameState={gameState} previousState={previousState} />
+          {/* Golden thread connecting Treasury to Deck */}
+          <div className="w-12 md:w-20 h-[2px] bg-gradient-to-r from-coup-gold/60 via-coup-gold to-coup-gold/60 
+            shadow-[0_0_10px_rgba(212,175,55,0.5)]" />
+        </div>
         
         {/* Deck in center */}
         <CoupDeck deckSize={deckSize} />
         
-        {/* Decorative divider line */}
-        <div className="hidden md:block absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[400px] h-[1px]
-          bg-gradient-to-r from-transparent via-coup-gold/20 to-transparent -z-10" />
+        {/* Action Display on right with connecting thread */}
+        <div className="flex items-center">
+          {/* Golden thread connecting Deck to Action Display */}
+          <div className="w-12 md:w-20 h-[2px] bg-gradient-to-r from-coup-gold/60 via-coup-gold to-coup-gold/60 
+            shadow-[0_0_10px_rgba(212,175,55,0.5)]" />
+          
+          {/* Action Display - fixed width to prevent layout shift */}
+          <div className="w-56 md:w-72 min-h-[140px] flex items-center justify-center 
+            bg-gradient-to-b from-coup-gray/50 to-coup-darker/50 
+            border-2 border-coup-gold/30 rounded-2xl p-3
+            backdrop-blur-sm">
+            {/* Decorative corners */}
+            <div className="absolute top-0 left-0 w-4 h-4 border-l-2 border-t-2 border-coup-gold/50 rounded-tl-lg" />
+            <div className="absolute top-0 right-0 w-4 h-4 border-r-2 border-t-2 border-coup-gold/50 rounded-tr-lg" />
+            <div className="absolute bottom-0 left-0 w-4 h-4 border-l-2 border-b-2 border-coup-gold/50 rounded-bl-lg" />
+            <div className="absolute bottom-0 right-0 w-4 h-4 border-r-2 border-b-2 border-coup-gold/50 rounded-br-lg" />
+            
+            <AnimatePresence mode="wait">
+              {currentAction ? (
+                <motion.div
+                  key="action"
+                  initial={{ opacity: 0, scale: 0.9 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  exit={{ opacity: 0, scale: 0.9 }}
+                  className="w-full"
+                >
+                  <ActionDisplay gameState={gameState} />
+                </motion.div>
+              ) : (
+                <motion.div
+                  key="waiting"
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 0.5 }}
+                  exit={{ opacity: 0 }}
+                  className="text-gray-500 text-xs text-center font-display tracking-wider"
+                >
+                  AWAITING ACTION
+                </motion.div>
+              )}
+            </AnimatePresence>
+          </div>
+        </div>
       </div>
-
-      {/* Current Action Display */}
-      <AnimatePresence>
-        {currentAction && (
-          <motion.div
-            initial={{ opacity: 0, y: 20, scale: 0.95 }}
-            animate={{ opacity: 1, y: 0, scale: 1 }}
-            exit={{ opacity: 0, y: -20, scale: 0.95 }}
-            className="flex justify-center pb-4 px-4 relative z-10"
-          >
-            <ActionDisplay gameState={gameState} />
-          </motion.div>
-        )}
-      </AnimatePresence>
     </div>
   )
 }

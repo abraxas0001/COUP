@@ -49,46 +49,79 @@
   <rect x="8" y="8" width="184" height="264" rx="10" fill="none" stroke="url(#contessaAccent)" stroke-width="1" opacity="0.3"/>
   
   <g transform="translate(100, 95)" filter="url(#contessaDropShadow)">
+    <!-- Dress -->
     <path d="M-35 90 Q-40 60 -30 40 L-22 32 Q0 28 22 32 L30 40 Q40 60 35 90 Z" fill="url(#contessaDress)" stroke="#922b21" stroke-width="1"/>
+    <!-- Dress ruffles -->
     <path d="M-25 32 Q-30 15 -20 25 L-15 30" fill="#c0392b" stroke="#922b21" stroke-width="0.5"/>
     <path d="M25 32 Q30 15 20 25 L15 30" fill="#c0392b" stroke="#922b21" stroke-width="0.5"/>
+    <!-- Necklace -->
     <path d="M-12 32 Q0 38 12 32" fill="none" stroke="#ffd700" stroke-width="1.5"/>
     <circle cx="0" cy="36" r="4" fill="#ffd700"/>
     <circle cx="0" cy="36" r="2" fill="#e74c3c"/>
+    
+    <!-- Face -->
     <ellipse cx="0" cy="5" rx="18" ry="22" fill="url(#contessaSkin)"/>
+    
+    <!-- Hair -->
     <ellipse cx="0" cy="-12" rx="20" ry="16" fill="#8b4513"/>
     <path d="M-18 -8 Q-20 -28 0 -26 Q20 -28 18 -8" fill="#a0522d"/>
     <ellipse cx="0" cy="-20" rx="12" ry="8" fill="#8b4513"/>
+    <!-- Hair curls by ears -->
     <path d="M-17 -2 Q-22 3 -18 12" fill="none" stroke="#8b4513" stroke-width="3"/>
     <path d="M17 -2 Q22 3 18 12" fill="none" stroke="#8b4513" stroke-width="3"/>
+    
+    <!-- Eyes -->
     <ellipse cx="-7" cy="2" rx="4" ry="3" fill="#ecf0f1"/>
     <circle cx="-6" cy="2" r="2.5" fill="#27ae60"/>
     <ellipse cx="7" cy="2" rx="4" ry="3" fill="#ecf0f1"/>
     <circle cx="8" cy="2" r="2.5" fill="#27ae60"/>
+    
+    <!-- Eyebrows -->
     <path d="M-12 -2 Q-7 -4 -3 -2" stroke="#5d4037" stroke-width="1.5" fill="none"/>
     <path d="M3 -2 Q7 -4 12 -2" stroke="#5d4037" stroke-width="1.5" fill="none"/>
+    
+    <!-- Nose -->
     <path d="M0 6 L-1 11 L1 11" fill="none" stroke="#d4a590" stroke-width="1.2"/>
+    
+    <!-- Lips -->
     <ellipse cx="0" cy="15" rx="5" ry="2.5" fill="#c0392b"/>
+    
+    <!-- Ears with earrings -->
     <ellipse cx="-16" cy="3" rx="3" ry="5" fill="url(#contessaSkin)"/>
     <circle cx="-16" cy="8" r="2" fill="#ffd700"/>
     <ellipse cx="16" cy="3" rx="3" ry="5" fill="url(#contessaSkin)"/>
     <circle cx="16" cy="8" r="2" fill="#ffd700"/>
-    <g transform="translate(0, 35)">
-      <g transform="rotate(-5)">
-        <path d="M0 25 L-40 -15 A50 50 0 0 1 -28 -30 Z" fill="url(#fanGradient)" stroke="#8b4513" stroke-width="0.5"/>
-        <path d="M0 25 L-28 -30 A50 50 0 0 1 -10 -38 Z" fill="url(#fanGradient)" stroke="#8b4513" stroke-width="0.5"/>
-        <path d="M0 25 L-10 -38 A50 50 0 0 1 10 -38 Z" fill="url(#fanGradient)" stroke="#8b4513" stroke-width="0.5"/>
-        <path d="M0 25 L10 -38 A50 50 0 0 1 28 -30 Z" fill="url(#fanGradient)" stroke="#8b4513" stroke-width="0.5"/>
-        <path d="M0 25 L28 -30 A50 50 0 0 1 40 -15 Z" fill="url(#fanGradient)" stroke="#8b4513" stroke-width="0.5"/>
-        <line x1="0" y1="25" x2="-34" y2="-22" stroke="#8b4513" stroke-width="0.8"/>
-        <line x1="0" y1="25" x2="-19" y2="-34" stroke="#8b4513" stroke-width="0.8"/>
-        <line x1="0" y1="25" x2="0" y2="-38" stroke="#8b4513" stroke-width="0.8"/>
-        <line x1="0" y1="25" x2="19" y2="-34" stroke="#8b4513" stroke-width="0.8"/>
-        <line x1="0" y1="25" x2="34" y2="-22" stroke="#8b4513" stroke-width="0.8"/>
-        <path d="M-40 -15 A50 50 0 0 1 40 -15" fill="none" stroke="#c0392b" stroke-width="2"/>
+    
+    <!-- Left arm holding fan at side -->
+    <g transform="translate(-32, 50)">
+      <!-- Arm -->
+      <ellipse cx="0" cy="0" rx="8" ry="12" fill="url(#contessaDress)"/>
+      <ellipse cx="-5" cy="10" rx="6" ry="7" fill="url(#contessaSkin)"/>
+      
+      <!-- Fan held in hand - at her side -->
+      <g transform="translate(-8, -5) rotate(-30)">
+        <path d="M0 20 L-25 -10 A35 35 0 0 1 -18 -22 Z" fill="url(#fanGradient)" stroke="#8b4513" stroke-width="0.5"/>
+        <path d="M0 20 L-18 -22 A35 35 0 0 1 -6 -28 Z" fill="url(#fanGradient)" stroke="#8b4513" stroke-width="0.5"/>
+        <path d="M0 20 L-6 -28 A35 35 0 0 1 6 -28 Z" fill="url(#fanGradient)" stroke="#8b4513" stroke-width="0.5"/>
+        <path d="M0 20 L6 -28 A35 35 0 0 1 18 -22 Z" fill="url(#fanGradient)" stroke="#8b4513" stroke-width="0.5"/>
+        <path d="M0 20 L18 -22 A35 35 0 0 1 25 -10 Z" fill="url(#fanGradient)" stroke="#8b4513" stroke-width="0.5"/>
+        <!-- Fan ribs -->
+        <line x1="0" y1="20" x2="-22" y2="-16" stroke="#8b4513" stroke-width="0.6"/>
+        <line x1="0" y1="20" x2="-12" y2="-25" stroke="#8b4513" stroke-width="0.6"/>
+        <line x1="0" y1="20" x2="0" y2="-28" stroke="#8b4513" stroke-width="0.6"/>
+        <line x1="0" y1="20" x2="12" y2="-25" stroke="#8b4513" stroke-width="0.6"/>
+        <line x1="0" y1="20" x2="22" y2="-16" stroke="#8b4513" stroke-width="0.6"/>
+        <!-- Decorative edge -->
+        <path d="M-25 -10 A35 35 0 0 1 25 -10" fill="none" stroke="#c0392b" stroke-width="1.5"/>
+        <!-- Handle joint -->
+        <circle cx="0" cy="18" r="4" fill="url(#goldAccent)"/>
       </g>
-      <circle cx="0" cy="23" r="5" fill="url(#goldAccent)"/>
-      <ellipse cx="0" cy="30" rx="8" ry="6" fill="url(#contessaSkin)"/>
+    </g>
+    
+    <!-- Right arm resting -->
+    <g transform="translate(32, 50)">
+      <ellipse cx="0" cy="0" rx="8" ry="12" fill="url(#contessaDress)"/>
+      <ellipse cx="5" cy="10" rx="6" ry="7" fill="url(#contessaSkin)"/>
     </g>
   </g>
   
