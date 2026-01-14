@@ -62,7 +62,17 @@ export default function Home() {
   }
 
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center px-4 py-12 relative z-10">
+    <div className="min-h-screen flex flex-col items-center justify-center px-4 py-12 relative z-10"
+      style={{
+        backgroundImage: 'url(/images/Screenshot\ 2026-01-14\ 081637.png)',
+        backgroundSize: 'cover',
+        backgroundPosition: 'center',
+        backgroundAttachment: 'fixed'
+      }}
+    >
+      {/* Background overlay for better text readability */}
+      <div className="absolute inset-0 bg-black/50 -z-10" />
+      
       {/* Hero Section */}
       <motion.div 
         initial={{ opacity: 0, y: 20 }}
