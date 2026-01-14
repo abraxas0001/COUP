@@ -90,16 +90,16 @@ export default function GameTable({ gameState, myId }) {
 
       {/* Center Table Area - Deck, Treasury & Action Display */}
       <div className="flex justify-center items-center py-8 relative z-10">
-        {/* Treasury on left (slightly shifted right) */}
-        <div className="flex items-center ml-8 md:ml-12">
+        {/* Treasury shifted right to connect thread */}
+        <div className="flex items-center ml-24 md:ml-32">
           <Treasury gameState={gameState} previousState={previousState} />
           {/* Golden thread connecting Treasury to Deck */}
-          <div className="w-16 md:w-28 h-[1px] bg-gradient-to-r from-coup-gold/60 via-coup-gold to-coup-gold/60 
+          <div className="w-8 md:w-12 h-[1px] bg-gradient-to-r from-coup-gold/60 via-coup-gold to-coup-gold/60 
             shadow-[0_0_8px_rgba(212,175,55,0.45)]" />
         </div>
         
-        {/* Deck in center - shifted right to align below player cards */}
-        <div className="ml-20 md:ml-28">
+        {/* Deck in center */}
+        <div className="ml-0">
           <CoupDeck deckSize={deckSize} />
         </div>
         

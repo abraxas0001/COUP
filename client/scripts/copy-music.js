@@ -5,13 +5,10 @@ import { fileURLToPath } from 'url'
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = path.dirname(__filename)
 
-const rootDir = path.resolve(__dirname, '..', '..')
+// Source: /music folder at project root
+const musicSourceDir = path.resolve(__dirname, '..', '..', 'music')
+// Destination: /client/public/music
 const clientPublicMusic = path.resolve(__dirname, '..', 'public', 'music')
-
-const tracks = [
-  'Yiruma - River Flows In You.mp3',
-  '96 (Original Background Score) CD 1 TRACK 1 (320).mp3'
-]
 
 function ensureDir(dir) {
   if (!fs.existsSync(dir)) {
@@ -23,7 +20,7 @@ function copyIfExists(src, dest) {
   try {
     if (fs.existsSync(src)) {
       fs.copyFileSync(src, dest)
-      console.log(`Copied: ${path.basename(src)} -> ${dest}`)
+      console.log(`Copied: ${path.basename(src)}`)
     } else {
       console.warn(`Missing source: ${src}`)
     }
@@ -32,12 +29,28 @@ function copyIfExists(src, dest) {
   }
 }
 
+// Ensure destination directory exists
 ensureDir(clientPublicMusic)
 
-tracks.forEach(filename => {
-  const src = path.resolve(rootDir, filename)
-  const dest = path.resolve(clientPublicMusic, filename)
-  copyIfExists(src, dest)
-})
+// Dynamically scan music folder for all audio files
+const audioExtensions = ['.mp3', '.ogg', '.wav', '.m4a', '.flac']
+
+if (fs.existsSync(musicSourceDir)) {
+  const files = fs.readdirSync(musicSourceDir)
+  const audioFiles = files.filter(f => audioExtensions.includes(path.extname(f).toLowerCase()))
+  
+  if (audioFiles.length === 0) {
+    console.log('No audio files found in /music folder')
+  } else {
+    audioFiles.forEach(filename => {
+      const src = path.join(musicSourceDir, filename)
+      const dest = path.join(clientPublicMusic, filename)
+      copyIfExists(src, dest)
+    })
+    console.log(`\nCopied ${audioFiles.length} audio file(s) to client/public/music`)
+  }
+} else {
+  console.warn('Music source folder not found:', musicSourceDir)
+}
 
 console.log('Music copy script finished.')
