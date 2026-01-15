@@ -18,24 +18,44 @@ const io = new Server(httpServer, {
     origin: process.env.NODE_ENV === 'production' 
       ? [
           'https://coup-erky.onrender.com',
-          /\.vercel\.app$/  // Allow all Vercel deployments
+          /\.vercel\.app$/,  // Allow all Vercel deployments
+          /\.vercel\.app$/i,
+          'https://coup-game.vercel.app',
+          'http://localhost:5173',
+          'http://127.0.0.1:5173'
         ]
       : ['http://localhost:5173', 'http://127.0.0.1:5173', 'http://localhost:3000'],
-    methods: ['GET', 'POST'],
-    credentials: true
+    methods: ['GET', 'POST', 'OPTIONS'],
+    credentials: true,
+    allowedHeaders: ['Content-Type', 'Authorization']
   },
-  transports: ['websocket', 'polling'],
+  transports: ['polling', 'websocket'], // Polling first for reliability
   allowEIO3: true,
-  pingTimeout: 120000,
+  allowEIO4: true,
+  pingTimeout: 60000,
   pingInterval: 25000,
-  upgradeTimeout: 120000,
+  upgradeTimeout: 30000,
   maxHttpBufferSize: 1e6,
   allowUpgrades: true,
   perMessageDeflate: false,
-  httpCompression: false
+  httpCompression: false,
+  cookie: false,
+  serveClient: false,
+  path: '/socket.io/'
 });
 
-app.use(cors());
+app.use(cors({
+  origin: process.env.NODE_ENV === 'production' 
+    ? [
+        'https://coup-erky.onrender.com',
+        /\.vercel\.app$/,
+        'http://localhost:5173'
+      ]
+    : ['http://localhost:5173', 'http://127.0.0.1:5173', 'http://localhost:3000'],
+  credentials: true,
+  methods: ['GET', 'POST', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization']
+}));
 app.use(express.json());
 
 // Health check endpoint

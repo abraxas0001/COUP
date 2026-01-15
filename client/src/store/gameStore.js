@@ -4,6 +4,8 @@ import { io } from 'socket.io-client'
 const SOCKET_URL = import.meta.env.VITE_API_URL || 'https://coup-erky.onrender.com'
 
 console.log('🔌 Connecting to Socket.io at:', SOCKET_URL)
+console.log('🌍 Environment:', import.meta.env.MODE)
+console.log('🔧 API URL from env:', import.meta.env.VITE_API_URL)
 
 export const useGameStore = create((set, get) => ({
   // Socket connection
@@ -50,18 +52,37 @@ export const useGameStore = create((set, get) => ({
     // Show loading state while connecting
     set({ isLoading: true, error: 'Waking up server... This may take 60-90 seconds on first load.' })
     
+    // Test server connectivity first
+    console.log('🔍 Testing server connectivity...')
+    fetch(`${SOCKET_URL}/health`, { 
+      method: 'GET',
+      mode: 'cors',
+      cache: 'no-cache'
+    })
+      .then(res => res.json())
+      .then(data => {
+        console.log('✅ Server is reachable:', data)
+      })
+      .catch(err => {
+        console.warn('⚠️ Server health check failed (might be cold start):', err.message)
+      })
+    
     const socket = io(SOCKET_URL, {
-      transports: ['websocket', 'polling'],
+      transports: ['polling', 'websocket'], // Polling first for reliability
       reconnection: true,
-      reconnectionAttempts: 50,
+      reconnectionAttempts: 10,
       reconnectionDelay: 1000,
-      reconnectionDelayMax: 30000,
-      timeout: 120000,
+      reconnectionDelayMax: 5000,
+      timeout: 60000,
       autoConnect: true,
-      forceNew: false, // Allow reusing connections
-      upgrade: true,
+      forceNew: false,
+      upgrade: true, // Try to upgrade to websocket after polling connects
       rememberUpgrade: true,
-      closeOnBeforeunload: false, // Don't close on page navigation
+      closeOnBeforeunload: false,
+      secure: true, // Use secure connection
+      rejectUnauthorized: false, // Accept self-signed certs in dev
+      withCredentials: true,
+      path: '/socket.io/',
     })
     
     socket.on('connect', () => {
@@ -105,7 +126,29 @@ export const useGameStore = create((set, get) => ({
     
     socket.on('connect_error', (error) => {
       console.error('⚠️ Connection error:', error)
-      set({ error: `Connecting to server... (Attempt in progress)` })
+      const attemptNumber = socket.io?.engine?.transport?.name
+      set({ 
+        error: `Connecting to server... ${attemptNumber ? `(${attemptNumber})` : ''}`,
+        isLoading: true 
+      })
+    })
+    
+    socket.on('reconnect_attempt', (attemptNumber) => {
+      console.log(`🔄 Reconnection attempt ${attemptNumber}`)
+      set({ error: `Reconnecting... (Attempt ${attemptNumber})` })
+    })
+    
+    socket.on('reconnect', (attemptNumber) => {
+      console.log(`✅ Reconnected after ${attemptNumber} attempts`)
+      set({ error: null, isLoading: false })
+    })
+    
+    socket.on('reconnect_failed', () => {
+      console.error('❌ Reconnection failed')
+      set({ 
+        error: 'Unable to connect to server. Please check your internet connection and try again.',
+        isLoading: false 
+      })
     })
     
     socket.on('error', (error) => {
