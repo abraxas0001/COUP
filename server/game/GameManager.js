@@ -121,6 +121,13 @@ export class GameManager {
       if (onGameUpdate) {
         onGameUpdate(game);
       }
+      
+      // Clean up game after all players disconnect
+      if (alivePlayers.length === 0) {
+        setTimeout(() => {
+          this.deleteGame(gameId);
+        }, 5000); // 5 second delay to allow final state updates
+      }
     }
     
     this.playerGameMap.delete(playerId);
@@ -129,10 +136,22 @@ export class GameManager {
   deleteGame(gameId) {
     const game = this.games.get(gameId);
     if (game) {
+      console.log(`🧹 Cleaning up game: ${gameId}`);
       game.players.forEach(p => {
         this.playerGameMap.delete(p.id);
       });
       this.games.delete(gameId);
     }
+  }
+  
+  // Clean up finished games after 10 minutes
+  scheduleGameCleanup(gameId) {
+    setTimeout(() => {
+      const game = this.games.get(gameId);
+      if (game && game.phase === 'gameOver') {
+        console.log(`⏰ Auto-cleaning up finished game: ${gameId}`);
+        this.deleteGame(gameId);
+      }
+    }, 10 * 60 * 1000); // 10 minutes
   }
 }

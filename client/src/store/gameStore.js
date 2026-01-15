@@ -37,7 +37,13 @@ export const useGameStore = create((set, get) => ({
     // If socket exists but disconnected, clean it up
     if (existingSocket) {
       console.log('🧹 Cleaning up old socket connection')
+      // Clear heartbeat interval
+      if (existingSocket._heartbeatInterval) {
+        clearInterval(existingSocket._heartbeatInterval)
+        existingSocket._heartbeatInterval = null
+      }
       existingSocket.removeAllListeners()
+      existingSocket.close()
       existingSocket.disconnect()
     }
     
@@ -47,12 +53,15 @@ export const useGameStore = create((set, get) => ({
     const socket = io(SOCKET_URL, {
       transports: ['websocket', 'polling'],
       reconnection: true,
-      reconnectionAttempts: 50, // Increased reconnection attempts
-      reconnectionDelay: 1000, // Start with 1 second
-      reconnectionDelayMax: 30000, // Up to 30 seconds between attempts
-      timeout: 120000, // 120 second timeout for Render cold starts
+      reconnectionAttempts: 50,
+      reconnectionDelay: 1000,
+      reconnectionDelayMax: 30000,
+      timeout: 120000,
       autoConnect: true,
-      forceNew: true, // Force new connection to avoid stale connections
+      forceNew: false, // Allow reusing connections
+      upgrade: true,
+      rememberUpgrade: true,
+      closeOnBeforeunload: false, // Don't close on page navigation
     })
     
     socket.on('connect', () => {
@@ -134,7 +143,15 @@ export const useGameStore = create((set, get) => ({
     const { socket } = get()
     if (socket) {
       console.log('🔌 Disconnecting socket')
+      
+      // Clear heartbeat interval
+      if (socket._heartbeatInterval) {
+        clearInterval(socket._heartbeatInterval)
+        socket._heartbeatInterval = null
+      }
+      
       socket.removeAllListeners()
+      socket.close()
       socket.disconnect()
       set({ socket: null, isConnected: false, lobby: null, gameState: null })
     }

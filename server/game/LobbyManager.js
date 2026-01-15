@@ -110,6 +110,33 @@ export class LobbyManager {
   constructor() {
     this.lobbies = new Map();
     this.playerLobbyMap = new Map(); // Track which lobby each player is in
+    this.lobbyTimers = new Map(); // Track cleanup timers
+    
+    // Clean up old lobbies every 5 minutes
+    setInterval(() => {
+      this.cleanupInactiveLobbies();
+    }, 5 * 60 * 1000);
+  }
+  
+  cleanupInactiveLobbies() {
+    const now = Date.now();
+    const INACTIVE_TIMEOUT = 30 * 60 * 1000; // 30 minutes
+    
+    for (const [lobbyCode, lobby] of this.lobbies.entries()) {
+      const inactiveTime = now - lobby.createdAt;
+      if (inactiveTime > INACTIVE_TIMEOUT || (lobby.gameStarted && lobby.players.length === 0)) {
+        console.log(`🧹 Cleaning up inactive lobby: ${lobbyCode}`);
+        lobby.players.forEach(player => {
+          this.playerLobbyMap.delete(player.id);
+        });
+        this.lobbies.delete(lobbyCode);
+        const timer = this.lobbyTimers.get(lobbyCode);
+        if (timer) {
+          clearTimeout(timer);
+          this.lobbyTimers.delete(lobbyCode);
+        }
+      }
+    }
   }
 
   createLobby(hostId, hostName, avatarId) {

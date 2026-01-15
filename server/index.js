@@ -61,15 +61,30 @@ if (process.env.NODE_ENV === 'production') {
 const lobbyManager = new LobbyManager();
 const gameManager = new GameManager(io);
 
+// Track active connections
+const activeConnections = new Map();
+
 // Socket.io connection handling
 io.on('connection', (socket) => {
   console.log(`Player connected: ${socket.id}`);
+  
+  // Track connection
+  activeConnections.set(socket.id, {
+    connectedAt: Date.now(),
+    lastActivity: Date.now(),
+    socketId: socket.id
+  });
 
   // ========================
   // HEARTBEAT / KEEP-ALIVE
   // ========================
   
   socket.on('ping', (data) => {
+    // Update last activity
+    const conn = activeConnections.get(socket.id);
+    if (conn) {
+      conn.lastActivity = Date.now();
+    }
     socket.emit('pong', { timestamp: Date.now() });
   });
 
@@ -166,6 +181,12 @@ io.on('connection', (socket) => {
 
   socket.on('gameAction', ({ lobbyCode, action, target, card }, callback) => {
     try {
+      // Update last activity
+      const conn = activeConnections.get(socket.id);
+      if (conn) {
+        conn.lastActivity = Date.now();
+      }
+      
       const result = gameManager.handleAction(lobbyCode, socket.id, action, target, card);
       
       if (result.success) {
@@ -177,6 +198,11 @@ io.on('connection', (socket) => {
             playerSocket.emit('gameStateUpdated', game.getStateForPlayer(player.id));
           }
         });
+        
+        // Check if game ended and schedule cleanup
+        if (game.phase === 'gameOver') {
+          gameManager.scheduleGameCleanup(lobbyCode);
+        }
       }
       
       callback(result);
@@ -197,6 +223,11 @@ io.on('connection', (socket) => {
             playerSocket.emit('gameStateUpdated', game.getStateForPlayer(player.id));
           }
         });
+        
+        // Check if game ended and schedule cleanup
+        if (game.phase === 'gameOver') {
+          gameManager.scheduleGameCleanup(lobbyCode);
+        }
       }
       
       callback(result);
@@ -257,6 +288,11 @@ io.on('connection', (socket) => {
             playerSocket.emit('gameStateUpdated', game.getStateForPlayer(player.id));
           }
         });
+        
+        // Check if game ended and schedule cleanup
+        if (game.phase === 'gameOver') {
+          gameManager.scheduleGameCleanup(lobbyCode);
+        }
       }
       
       callback(result);
@@ -307,8 +343,11 @@ io.on('connection', (socket) => {
   // DISCONNECT HANDLING
   // ========================
 
-  socket.on('disconnect', () => {
-    console.log(`Player disconnected: ${socket.id}`);
+  socket.on('disconnect', (reason) => {
+    console.log(`Player disconnected: ${socket.id}, reason: ${reason}`);
+    
+    // Remove from active connections
+    activeConnections.delete(socket.id);
     
     // Handle lobby disconnection
     const lobbyResult = lobbyManager.handleDisconnect(socket.id);
@@ -329,7 +368,29 @@ io.on('connection', (socket) => {
       });
     });
   });
+  
+  socket.on('error', (error) => {
+    console.error(`Socket error for ${socket.id}:`, error);
+  });
 });
+
+// Clean up stale connections every 2 minutes
+setInterval(() => {
+  const now = Date.now();
+  const STALE_TIMEOUT = 5 * 60 * 1000; // 5 minutes
+  
+  for (const [socketId, conn] of activeConnections.entries()) {
+    const inactiveTime = now - conn.lastActivity;
+    if (inactiveTime > STALE_TIMEOUT) {
+      console.log(`🧹 Removing stale connection: ${socketId}`);
+      const staleSocket = io.sockets.sockets.get(socketId);
+      if (staleSocket) {
+        staleSocket.disconnect(true);
+      }
+      activeConnections.delete(socketId);
+    }
+  }
+}, 2 * 60 * 1000);
 
 // API Routes
 app.get('/api/health', (req, res) => {
