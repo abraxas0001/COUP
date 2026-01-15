@@ -50,21 +50,28 @@ export const useGameStore = create((set, get) => ({
     }
     
     // Show loading state while connecting
-    set({ isLoading: true, error: 'Waking up server... This may take 60-90 seconds on first load.' })
+    set({ isLoading: true, error: 'Connecting to server...' })
     
-    // Test server connectivity first
+    // Test server connectivity first (non-blocking with timeout)
     console.log('🔍 Testing server connectivity...')
+    const healthCheckTimeout = setTimeout(() => {
+      console.log('⏱️ Health check timed out, proceeding with connection...')
+    }, 5000)
+    
     fetch(`${SOCKET_URL}/health`, { 
       method: 'GET',
       mode: 'cors',
-      cache: 'no-cache'
+      cache: 'no-cache',
+      signal: AbortSignal.timeout(5000) // 5 second timeout
     })
       .then(res => res.json())
       .then(data => {
+        clearTimeout(healthCheckTimeout)
         console.log('✅ Server is reachable:', data)
       })
       .catch(err => {
-        console.warn('⚠️ Server health check failed (might be cold start):', err.message)
+        clearTimeout(healthCheckTimeout)
+        console.warn('⚠️ Health check failed (server might be waking up):', err.message)
       })
     
     const socket = io(SOCKET_URL, {
@@ -268,16 +275,32 @@ export const useGameStore = create((set, get) => ({
   leaveLobby: () => {
     return new Promise((resolve, reject) => {
       const { socket, lobby } = get()
-      if (!socket || !lobby) return resolve()
+      if (!socket || !lobby) {
+        // Clear state even if no lobby
+        set({ lobby: null, gameState: null, error: null })
+        return resolve()
+      }
+      
+      console.log('📤 Leaving lobby...')
       
       socket.emit('leaveLobby', { lobbyCode: lobby.id }, (response) => {
         if (response.success) {
-          set({ lobby: null })
+          console.log('✅ Left lobby successfully')
+          set({ lobby: null, gameState: null, error: null })
           resolve()
         } else {
-          reject(new Error(response.error))
+          console.warn('⚠️ Leave lobby response:', response.error)
+          // Clear state anyway
+          set({ lobby: null, gameState: null, error: null })
+          resolve() // Don't reject, just resolve
         }
       })
+      
+      // Timeout fallback
+      setTimeout(() => {
+        set({ lobby: null, gameState: null, error: null })
+        resolve()
+      }, 2000)
     })
   },
   
@@ -423,5 +446,21 @@ export const useGameStore = create((set, get) => ({
   
   clearError: () => set({ error: null }),
   
-  resetGame: () => set({ gameState: null, lobby: null }),
+  resetGame: async () => {
+    const { socket, lobby } = get()
+    
+    // Try to leave lobby if in one
+    if (socket && lobby) {
+      try {
+        socket.emit('leaveLobby', { lobbyCode: lobby.id }, () => {
+          console.log('✅ Left lobby')
+        })
+      } catch (err) {
+        console.warn('Failed to leave lobby:', err)
+      }
+    }
+    
+    // Clear state
+    set({ gameState: null, lobby: null, error: null, isLoading: false })
+  },
 }))
