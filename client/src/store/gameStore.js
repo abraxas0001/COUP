@@ -100,10 +100,11 @@ export const useGameStore = create((set, get) => ({
       const heartbeatInterval = setInterval(() => {
         if (socket.connected) {
           socket.emit('ping', { timestamp: Date.now() })
+          console.log('💓 Client heartbeat sent')
         } else {
           clearInterval(heartbeatInterval)
         }
-      }, 5 * 60 * 1000) // Send heartbeat every 5 minutes
+      }, 2 * 60 * 1000) // Send heartbeat every 2 minutes
       
       // Store interval ID for cleanup
       socket._heartbeatInterval = heartbeatInterval

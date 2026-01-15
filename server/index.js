@@ -18,9 +18,8 @@ const io = new Server(httpServer, {
     origin: process.env.NODE_ENV === 'production' 
       ? [
           'https://coup-erky.onrender.com',
-          /\.vercel\.app$/,  // Allow all Vercel deployments
-          /\.vercel\.app$/i,
-          'https://coup-game.vercel.app',
+          'https://coup-multi.vercel.app', // Add your specific Vercel domain
+          /^https:\/\/.*\.vercel\.app$/,  // Allow all Vercel deployments
           'http://localhost:5173',
           'http://127.0.0.1:5173'
         ]
@@ -48,7 +47,8 @@ app.use(cors({
   origin: process.env.NODE_ENV === 'production' 
     ? [
         'https://coup-erky.onrender.com',
-        /\.vercel\.app$/,
+        'https://coup-multi.vercel.app', // Add your specific Vercel domain
+        /^https:\/\/.*\.vercel\.app$/,
         'http://localhost:5173'
       ]
     : ['http://localhost:5173', 'http://127.0.0.1:5173', 'http://localhost:3000'],
@@ -461,9 +461,10 @@ httpServer.listen(PORT, () => {
   
   // Keep-alive mechanism to prevent Render from sleeping
   if (process.env.NODE_ENV === 'production') {
-    const KEEP_ALIVE_INTERVAL = 10 * 60 * 1000; // 10 minutes
+    const KEEP_ALIVE_INTERVAL = 5 * 60 * 1000; // 5 minutes (Render spins down after 15 min)
     
-    setInterval(async () => {
+    // Immediate self-ping on startup
+    const performSelfPing = async () => {
       try {
         const timestamp = new Date().toISOString();
         console.log(`⏰ Keep-alive ping at ${timestamp}`);
@@ -497,8 +498,15 @@ httpServer.listen(PORT, () => {
       } catch (error) {
         console.error('❌ Keep-alive error:', error.message);
       }
-    }, KEEP_ALIVE_INTERVAL);
+    };
     
-    console.log('🔄 Keep-alive mechanism enabled (10 min intervals)');
+    // Initial ping
+    setTimeout(performSelfPing, 10000); // Wait 10 seconds after startup
+    
+    // Regular interval pings
+    setInterval(performSelfPing, KEEP_ALIVE_INTERVAL);
+    
+    console.log('🔄 Keep-alive mechanism enabled (5 min intervals)');
+    console.log('⏰ Server will ping itself every 5 minutes to prevent sleep');
   }
 });
