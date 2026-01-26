@@ -177,8 +177,15 @@ io.on('connection', (socket) => {
             // Update socket ID
             const oldPlayerId = existingPlayer.id;
             existingPlayer.id = socket.id;
-            lobby.playerLobbyMap?.delete?.(oldPlayerId);
+            
+            // Update lobby manager's player-lobby mapping
+            lobbyManager.playerLobbyMap.delete(oldPlayerId);
             lobbyManager.playerLobbyMap.set(socket.id, lobbyCode);
+            
+            // Update host ID if this player is the host
+            if (lobby.hostId === oldPlayerId) {
+              lobby.hostId = socket.id;
+            }
             
             socket.join(lobbyCode);
             response.lobby = lobby.getPublicState();
