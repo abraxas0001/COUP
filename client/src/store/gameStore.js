@@ -1,11 +1,22 @@
 import { create } from 'zustand'
 import { io } from 'socket.io-client'
+import { v4 as uuidv4 } from 'uuid'
 
 const SOCKET_URL = import.meta.env.VITE_API_URL || 'https://coup-erky.onrender.com'
 
 console.log('🔌 Connecting to Socket.io at:', SOCKET_URL)
 console.log('🌍 Environment:', import.meta.env.MODE)
 console.log('🔧 API URL from env:', import.meta.env.VITE_API_URL)
+
+// Get or create a persistent session ID for reconnection
+const getSessionId = () => {
+  let sessionId = localStorage.getItem('sessionId')
+  if (!sessionId) {
+    sessionId = uuidv4()
+    localStorage.setItem('sessionId', sessionId)
+  }
+  return sessionId
+}
 
 export const useGameStore = create((set, get) => ({
   // Socket connection
@@ -15,9 +26,13 @@ export const useGameStore = create((set, get) => ({
   // Player info
   playerName: localStorage.getItem('playerName') || '',
   avatarId: parseInt(localStorage.getItem('avatarId')) || 1,
+  sessionId: getSessionId(),
   
   // Lobby state
   lobby: null,
+  
+  // Store current game lobby code for reconnection
+  currentLobbyCode: localStorage.getItem('currentLobbyCode') || null,
   
   // Game state
   gameState: null,
@@ -95,6 +110,34 @@ export const useGameStore = create((set, get) => ({
     socket.on('connect', () => {
       console.log('✅ Connected to server')
       set({ isConnected: true, error: null, isLoading: false })
+      
+      // Register session with server for reconnection support
+      const { sessionId, playerName, avatarId, currentLobbyCode } = get()
+      socket.emit('registerSession', {
+        sessionId,
+        playerName,
+        avatarId,
+        lobbyCode: currentLobbyCode
+      }, (response) => {
+        if (response.success) {
+          console.log('📋 Session registered')
+          if (response.lobby) {
+            console.log('🔄 Rejoined lobby:', response.lobby.id)
+            set({ lobby: response.lobby })
+          }
+          if (response.gameState) {
+            console.log('🎮 Rejoined game')
+            set({ gameState: response.gameState })
+          }
+        } else {
+          console.log('📋 Session registration:', response.message || 'No active game to rejoin')
+          // Clear stale lobby code if game no longer exists
+          if (currentLobbyCode && !response.lobby && !response.gameState) {
+            localStorage.removeItem('currentLobbyCode')
+            set({ currentLobbyCode: null })
+          }
+        }
+      })
       
       // Start heartbeat to keep server awake
       const heartbeatInterval = setInterval(() => {
@@ -221,7 +264,7 @@ export const useGameStore = create((set, get) => ({
   // Lobby actions
   createLobby: () => {
     return new Promise((resolve, reject) => {
-      const { socket, playerName, avatarId } = get()
+      const { socket, playerName, avatarId, sessionId } = get()
       if (!socket) {
         console.error('❌ Cannot create lobby: No socket connection')
         return reject(new Error('Not connected'))
@@ -230,12 +273,13 @@ export const useGameStore = create((set, get) => ({
       console.log('📤 Creating lobby...', { playerName, avatarId })
       set({ isLoading: true, error: null })
       
-      socket.emit('createLobby', { playerName, avatarId }, (response) => {
+      socket.emit('createLobby', { playerName, avatarId, sessionId }, (response) => {
         console.log('📥 Create lobby response:', response)
         set({ isLoading: false })
         if (response.success) {
           console.log('✅ Lobby created:', response.lobby)
-          set({ lobby: response.lobby })
+          localStorage.setItem('currentLobbyCode', response.lobby.id)
+          set({ lobby: response.lobby, currentLobbyCode: response.lobby.id })
           resolve(response.lobby)
         } else {
           console.error('❌ Create lobby failed:', response.error)
@@ -248,7 +292,7 @@ export const useGameStore = create((set, get) => ({
   
   joinLobby: (lobbyCode) => {
     return new Promise((resolve, reject) => {
-      const { socket, playerName, avatarId } = get()
+      const { socket, playerName, avatarId, sessionId } = get()
       if (!socket) {
         console.error('❌ Cannot join lobby: No socket connection')
         return reject(new Error('Not connected'))
@@ -257,12 +301,13 @@ export const useGameStore = create((set, get) => ({
       console.log('📤 Joining lobby...', { lobbyCode, playerName, avatarId })
       set({ isLoading: true, error: null })
       
-      socket.emit('joinLobby', { lobbyCode, playerName, avatarId }, (response) => {
+      socket.emit('joinLobby', { lobbyCode, playerName, avatarId, sessionId }, (response) => {
         console.log('📥 Join lobby response:', response)
         set({ isLoading: false })
         if (response.success) {
           console.log('✅ Joined lobby:', response.lobby)
-          set({ lobby: response.lobby })
+          localStorage.setItem('currentLobbyCode', response.lobby.id)
+          set({ lobby: response.lobby, currentLobbyCode: response.lobby.id })
           resolve(response.lobby)
         } else {
           console.error('❌ Join lobby failed:', response.error)
@@ -461,7 +506,10 @@ export const useGameStore = create((set, get) => ({
       }
     }
     
+    // Clear stored lobby code
+    localStorage.removeItem('currentLobbyCode')
+    
     // Clear state
-    set({ gameState: null, lobby: null, error: null, isLoading: false })
+    set({ gameState: null, lobby: null, error: null, isLoading: false, currentLobbyCode: null })
   },
 }))

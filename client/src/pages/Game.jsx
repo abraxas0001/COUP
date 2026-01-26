@@ -17,7 +17,7 @@ import MusicPlayer from '../components/MusicPlayer'
 export default function Game() {
   const { lobbyCode } = useParams()
   const navigate = useNavigate()
-  const { gameState, socket, resetGame, lobby, isConnected } = useGameStore()
+  const { gameState, socket, resetGame, lobby, isConnected, currentLobbyCode } = useGameStore()
   
   const [showExchangeModal, setShowExchangeModal] = useState(false)
   const [showInfluenceLossModal, setShowInfluenceLossModal] = useState(false)
@@ -27,17 +27,24 @@ export default function Game() {
   const myId = socket?.id
   const myPlayer = gameState?.players?.find(p => p.id === myId)
 
+  // Store current lobby code for reconnection
+  useEffect(() => {
+    if (lobbyCode && !currentLobbyCode) {
+      localStorage.setItem('currentLobbyCode', lobbyCode)
+    }
+  }, [lobbyCode, currentLobbyCode])
+
   // Redirect to home if game doesn't exist after timeout or no connection
   useEffect(() => {
-    // If no game state and no lobby, redirect after a short delay
-    if (!gameState && !lobby) {
+    // Only start timeout if connected but no game state
+    if (!gameState && !lobby && isConnected) {
       const timer = setTimeout(() => {
         setLoadingTimeout(true)
-      }, 3000) // 3 second timeout
+      }, 5000) // 5 second timeout (increased for reconnection)
       
       return () => clearTimeout(timer)
     }
-  }, [gameState, lobby])
+  }, [gameState, lobby, isConnected])
 
   // Redirect when timeout occurs or connection issues
   useEffect(() => {
@@ -76,8 +83,13 @@ export default function Game() {
       <div className="min-h-screen flex items-center justify-center bg-coup-dark">
         <div className="text-center">
           <Loader2 className="w-12 h-12 text-coup-gold animate-spin mx-auto mb-4" />
-          <p className="text-gray-400 mb-4">Loading game...</p>
-          {loadingTimeout && (
+          <p className="text-gray-400 mb-4">
+            {!isConnected ? 'Connecting to server...' : 'Loading game...'}
+          </p>
+          {!isConnected && (
+            <p className="text-yellow-500 text-sm mt-2">Reconnecting to server...</p>
+          )}
+          {loadingTimeout && isConnected && (
             <div className="mt-4">
               <p className="text-gray-500 text-sm mb-4">Game not found or has ended.</p>
               <button
@@ -90,9 +102,6 @@ export default function Game() {
                 Return to Home
               </button>
             </div>
-          )}
-          {!isConnected && (
-            <p className="text-yellow-500 text-sm mt-2">Reconnecting to server...</p>
           )}
         </div>
       </div>

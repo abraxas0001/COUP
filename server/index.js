@@ -84,6 +84,10 @@ const gameManager = new GameManager(io);
 // Track active connections
 const activeConnections = new Map();
 
+// Track session to socket mapping for reconnection
+const sessionToSocket = new Map();
+const socketToSession = new Map();
+
 // Socket.io connection handling
 io.on('connection', (socket) => {
   console.log(`Player connected: ${socket.id}`);
@@ -109,11 +113,101 @@ io.on('connection', (socket) => {
   });
 
   // ========================
+  // SESSION REGISTRATION (for reconnection)
+  // ========================
+  
+  socket.on('registerSession', ({ sessionId, playerName, avatarId, lobbyCode }, callback) => {
+    console.log(`📋 Session registration: ${sessionId} (socket: ${socket.id})`);
+    
+    // Check if this session was previously connected with a different socket
+    const oldSocketId = sessionToSocket.get(sessionId);
+    
+    // Update session mappings
+    sessionToSocket.set(sessionId, socket.id);
+    socketToSession.set(socket.id, sessionId);
+    
+    let response = { success: true, message: 'Session registered' };
+    
+    // Try to restore game state if there's a lobby code
+    if (lobbyCode && playerName) {
+      const game = gameManager.getGame(lobbyCode);
+      
+      if (game) {
+        // Find the player in the game by name (since socket.id changed)
+        const playerInGame = game.players.find(p => p.name === playerName);
+        
+        if (playerInGame && !playerInGame.isEliminated) {
+          console.log(`🔄 Reconnecting player ${playerName} to game ${lobbyCode}`);
+          
+          // Update the player's socket ID in the game
+          const oldPlayerId = playerInGame.id;
+          playerInGame.id = socket.id;
+          
+          // Update game manager's player-game mapping
+          gameManager.playerGameMap.delete(oldPlayerId);
+          gameManager.playerGameMap.set(socket.id, lobbyCode);
+          
+          // Join the socket room
+          socket.join(lobbyCode);
+          
+          // Send the current game state
+          response.gameState = game.getStateForPlayer(socket.id);
+          response.message = 'Reconnected to game';
+          
+          // Add reconnection log to game
+          game.addToLog(`${playerName} reconnected`, 'info');
+          
+          // Notify other players
+          game.players.forEach(player => {
+            if (player.id !== socket.id) {
+              const playerSocket = io.sockets.sockets.get(player.id);
+              if (playerSocket) {
+                playerSocket.emit('gameStateUpdated', game.getStateForPlayer(player.id));
+              }
+            }
+          });
+        }
+      } else {
+        // Check if lobby still exists
+        const lobby = lobbyManager.getLobby(lobbyCode);
+        if (lobby) {
+          // Try to rejoin the lobby
+          const existingPlayer = lobby.players.find(p => p.name === playerName);
+          if (existingPlayer) {
+            // Update socket ID
+            const oldPlayerId = existingPlayer.id;
+            existingPlayer.id = socket.id;
+            lobby.playerLobbyMap?.delete?.(oldPlayerId);
+            lobbyManager.playerLobbyMap.set(socket.id, lobbyCode);
+            
+            socket.join(lobbyCode);
+            response.lobby = lobby.getPublicState();
+            response.message = 'Reconnected to lobby';
+            
+            console.log(`🔄 Reconnecting player ${playerName} to lobby ${lobbyCode}`);
+            
+            // Notify other players
+            io.to(lobbyCode).emit('lobbyUpdated', lobby.getPublicState());
+          }
+        }
+      }
+    }
+    
+    callback(response);
+  });
+
+  // ========================
   // LOBBY EVENTS
   // ========================
 
-  socket.on('createLobby', ({ playerName, avatarId }, callback) => {
+  socket.on('createLobby', ({ playerName, avatarId, sessionId }, callback) => {
     try {
+      // Store session mapping
+      if (sessionId) {
+        sessionToSocket.set(sessionId, socket.id);
+        socketToSession.set(socket.id, sessionId);
+      }
+      
       const lobby = lobbyManager.createLobby(socket.id, playerName, avatarId);
       socket.join(lobby.id);
       callback({ success: true, lobby: lobby.getPublicState() });
@@ -123,8 +217,14 @@ io.on('connection', (socket) => {
     }
   });
 
-  socket.on('joinLobby', ({ lobbyCode, playerName, avatarId }, callback) => {
+  socket.on('joinLobby', ({ lobbyCode, playerName, avatarId, sessionId }, callback) => {
     try {
+      // Store session mapping
+      if (sessionId) {
+        sessionToSocket.set(sessionId, socket.id);
+        socketToSession.set(socket.id, sessionId);
+      }
+      
       const lobby = lobbyManager.joinLobby(lobbyCode, socket.id, playerName, avatarId);
       socket.join(lobby.id);
       
@@ -369,7 +469,87 @@ io.on('connection', (socket) => {
     // Remove from active connections
     activeConnections.delete(socket.id);
     
-    // Handle lobby disconnection
+    // Get session ID for potential reconnection
+    const sessionId = socketToSession.get(socket.id);
+    socketToSession.delete(socket.id);
+    
+    // Check if player is in a game - give them time to reconnect
+    const gameId = gameManager.playerGameMap.get(socket.id);
+    const game = gameId ? gameManager.getGame(gameId) : null;
+    
+    if (game) {
+      const player = game.getPlayer(socket.id);
+      if (player && !player.isEliminated) {
+        console.log(`⏳ Player ${player.name} disconnected from game, waiting for reconnection...`);
+        
+        // Mark player as temporarily disconnected
+        player.isDisconnected = true;
+        player.disconnectedAt = Date.now();
+        
+        // Notify other players
+        game.addToLog(`${player.name} disconnected (waiting for reconnection)`, 'info');
+        game.players.forEach(p => {
+          if (p.id !== socket.id) {
+            const playerSocket = io.sockets.sockets.get(p.id);
+            if (playerSocket) {
+              playerSocket.emit('gameStateUpdated', game.getStateForPlayer(p.id));
+            }
+          }
+        });
+        
+        // Set a grace period for reconnection (30 seconds)
+        setTimeout(() => {
+          // Check if player reconnected (socket ID would change but player name remains)
+          const currentPlayer = game.players.find(p => p.name === player.name);
+          if (currentPlayer && currentPlayer.isDisconnected) {
+            console.log(`❌ Player ${player.name} did not reconnect, eliminating from game`);
+            
+            // Player didn't reconnect, eliminate them
+            currentPlayer.isEliminated = true;
+            currentPlayer.influence.forEach(i => i.revealed = true);
+            currentPlayer.isDisconnected = false;
+            game.addToLog(`${currentPlayer.name} was eliminated (connection timeout)`, 'elimination');
+            
+            // Check for winner
+            const alivePlayers = game.getAlivePlayers();
+            if (alivePlayers.length === 1) {
+              game.winner = alivePlayers[0];
+              game.phase = 'gameOver';
+              game.addToLog(`${game.winner.name} wins the game!`, 'victory');
+            } else if (alivePlayers.length === 0) {
+              game.phase = 'gameOver';
+              game.addToLog('Game ended - all players disconnected', 'info');
+            }
+            
+            // If it was the disconnected player's turn, move to next
+            if (game.getCurrentPlayer()?.name === currentPlayer.name) {
+              game.nextTurn();
+            }
+            
+            // Update all connected players
+            game.players.forEach(p => {
+              const playerSocket = io.sockets.sockets.get(p.id);
+              if (playerSocket) {
+                playerSocket.emit('gameStateUpdated', game.getStateForPlayer(p.id));
+              }
+            });
+            
+            // Clean up game after all players disconnect
+            if (alivePlayers.length === 0) {
+              setTimeout(() => {
+                gameManager.deleteGame(gameId);
+              }, 5000);
+            }
+            
+            gameManager.playerGameMap.delete(socket.id);
+          }
+        }, 30000); // 30 second grace period
+        
+        return; // Don't process lobby disconnect immediately
+      }
+    }
+    
+    // Handle lobby disconnection (no game in progress)
     const lobbyResult = lobbyManager.handleDisconnect(socket.id);
     if (lobbyResult.lobby) {
       io.to(lobbyResult.lobby.id).emit('lobbyUpdated', lobbyResult.lobby.getPublicState());
@@ -377,16 +557,6 @@ io.on('connection', (socket) => {
         playerName: lobbyResult.playerName 
       });
     }
-    
-    // Handle game disconnection
-    gameManager.handleDisconnect(socket.id, (game) => {
-      game.players.forEach(player => {
-        const playerSocket = io.sockets.sockets.get(player.id);
-        if (playerSocket) {
-          playerSocket.emit('gameStateUpdated', game.getStateForPlayer(player.id));
-        }
-      });
-    });
   });
   
   socket.on('error', (error) => {
