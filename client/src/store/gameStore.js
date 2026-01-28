@@ -127,6 +127,13 @@ export const useGameStore = create((set, get) => ({
           }
           if (response.gameState) {
             console.log('🎮 Rejoined game')
+            console.log('📊 Game state:', {
+              phase: response.gameState.phase,
+              isYourTurn: response.gameState.isYourTurn,
+              currentPlayerId: response.gameState.currentPlayerId,
+              mySocketId: socket.id,
+              availableActions: response.gameState.availableActions?.length || 0
+            })
             set({ gameState: response.gameState })
           }
         } else {
@@ -245,6 +252,13 @@ export const useGameStore = create((set, get) => ({
     })
     
     socket.on('gameStateUpdated', (gameState) => {
+      console.log('📊 Game state updated:', {
+        phase: gameState.phase,
+        isYourTurn: gameState.isYourTurn,
+        currentPlayerId: gameState.currentPlayerId,
+        mySocketId: socket.id,
+        availableActions: gameState.availableActions?.length || 0
+      })
       set({ gameState })
     })
     

@@ -139,6 +139,9 @@ io.on('connection', (socket) => {
         
         if (playerInGame && !playerInGame.isEliminated) {
           console.log(`🔄 Reconnecting player ${playerName} to game ${lobbyCode}`);
+          console.log(`   Old socket ID: ${playerInGame.id}, New socket ID: ${socket.id}`);
+          console.log(`   Was disconnected: ${playerInGame.isDisconnected}, Phase: ${game.phase}`);
+          console.log(`   Current player: ${game.getCurrentPlayer()?.name}, Is their turn: ${game.getCurrentPlayer()?.name === playerName}`);
           
           // Update the player's socket ID in the game
           const oldPlayerId = playerInGame.id;
@@ -155,8 +158,11 @@ io.on('connection', (socket) => {
           // Join the socket room
           socket.join(lobbyCode);
           
-          // Send the current game state
-          response.gameState = game.getStateForPlayer(socket.id);
+          // Get the game state for the reconnected player
+          const gameState = game.getStateForPlayer(socket.id);
+          console.log(`   Sending game state - isYourTurn: ${gameState.isYourTurn}, availableActions: ${gameState.availableActions?.length || 0}`);
+          
+          response.gameState = gameState;
           response.message = 'Reconnected to game';
           
           // Add reconnection log to game
@@ -491,18 +497,30 @@ io.on('connection', (socket) => {
     const game = gameId ? gameManager.getGame(gameId) : null;
     
     if (game) {
-      const player = game.getPlayer(socket.id);
+      // Try to find player by socket ID
+      let player = game.getPlayer(socket.id);
+      
+      // If not found by socket ID, player might have already reconnected with new socket
+      if (!player) {
+        console.log(`Player already reconnected with new socket, skipping disconnect handling`);
+        gameManager.playerGameMap.delete(socket.id);
+        return;
+      }
+      
       if (player && !player.isEliminated) {
         console.log(`⏳ Player ${player.name} disconnected from game (reason: ${reason}), waiting for reconnection...`);
+        
+        // Store the player name for the timeout check
+        const playerName = player.name;
         
         // Mark player as temporarily disconnected
         player.isDisconnected = true;
         player.disconnectedAt = Date.now();
         
         // Notify other players
-        game.addToLog(`${player.name} disconnected (waiting for reconnection)`, 'info');
+        game.addToLog(`${playerName} disconnected (waiting for reconnection)`, 'info');
         game.players.forEach(p => {
-          if (p.id !== socket.id) {
+          if (p.id !== socket.id && !p.isDisconnected) {
             const playerSocket = io.sockets.sockets.get(p.id);
             if (playerSocket) {
               playerSocket.emit('gameStateUpdated', game.getStateForPlayer(p.id));
@@ -510,40 +528,44 @@ io.on('connection', (socket) => {
           }
         });
         
-        // Set a grace period for reconnection (60 seconds - longer for unstable connections)
+        // Set a grace period for reconnection (60 seconds)
         setTimeout(() => {
-          // Check if player reconnected (socket ID would change but player name remains)
-          const currentPlayer = game.players.find(p => p.name === player.name);
+          // Re-fetch the game in case it was deleted
+          const currentGame = gameManager.getGame(gameId);
+          if (!currentGame) return;
+          
+          // Check if player reconnected (find by name since socket ID changed)
+          const currentPlayer = currentGame.players.find(p => p.name === playerName);
           if (currentPlayer && currentPlayer.isDisconnected) {
-            console.log(`❌ Player ${player.name} did not reconnect, eliminating from game`);
+            console.log(`❌ Player ${playerName} did not reconnect, eliminating from game`);
             
             // Player didn't reconnect, eliminate them
             currentPlayer.isEliminated = true;
             currentPlayer.influence.forEach(i => i.revealed = true);
             currentPlayer.isDisconnected = false;
-            game.addToLog(`${currentPlayer.name} was eliminated (connection timeout)`, 'elimination');
+            currentGame.addToLog(`${currentPlayer.name} was eliminated (connection timeout)`, 'elimination');
             
             // Check for winner
-            const alivePlayers = game.getAlivePlayers();
+            const alivePlayers = currentGame.getAlivePlayers();
             if (alivePlayers.length === 1) {
-              game.winner = alivePlayers[0];
-              game.phase = 'gameOver';
-              game.addToLog(`${game.winner.name} wins the game!`, 'victory');
+              currentGame.winner = alivePlayers[0];
+              currentGame.phase = 'gameOver';
+              currentGame.addToLog(`${currentGame.winner.name} wins the game!`, 'victory');
             } else if (alivePlayers.length === 0) {
-              game.phase = 'gameOver';
-              game.addToLog('Game ended - all players disconnected', 'info');
+              currentGame.phase = 'gameOver';
+              currentGame.addToLog('Game ended - all players disconnected', 'info');
             }
             
             // If it was the disconnected player's turn, move to next
-            if (game.getCurrentPlayer()?.name === currentPlayer.name) {
-              game.nextTurn();
+            if (currentGame.getCurrentPlayer()?.name === currentPlayer.name) {
+              currentGame.nextTurn();
             }
             
             // Update all connected players
-            game.players.forEach(p => {
+            currentGame.players.forEach(p => {
               const playerSocket = io.sockets.sockets.get(p.id);
               if (playerSocket) {
-                playerSocket.emit('gameStateUpdated', game.getStateForPlayer(p.id));
+                playerSocket.emit('gameStateUpdated', currentGame.getStateForPlayer(p.id));
               }
             });
             
@@ -553,13 +575,17 @@ io.on('connection', (socket) => {
                 gameManager.deleteGame(gameId);
               }, 5000);
             }
-            
-            gameManager.playerGameMap.delete(socket.id);
           }
         }, 60000); // 60 second grace period
         
-        return; // Don't process lobby disconnect immediately
+        gameManager.playerGameMap.delete(socket.id);
+        return; // Don't process lobby disconnect
       }
+    }
+    
+    // Clean up game mapping if present
+    if (gameId) {
+      gameManager.playerGameMap.delete(socket.id);
     }
     
     // Handle lobby disconnection (no game in progress)
