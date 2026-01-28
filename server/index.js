@@ -28,11 +28,11 @@ const io = new Server(httpServer, {
     credentials: true,
     allowedHeaders: ['Content-Type', 'Authorization']
   },
-  transports: ['polling', 'websocket'], // Polling first for reliability
+  transports: ['websocket', 'polling'], // WebSocket first for better performance
   allowEIO3: true,
   allowEIO4: true,
-  pingTimeout: 60000,
-  pingInterval: 25000,
+  pingTimeout: 30000,
+  pingInterval: 10000, // More frequent pings to detect disconnects faster
   upgradeTimeout: 30000,
   maxHttpBufferSize: 1e6,
   allowUpgrades: true,
@@ -40,7 +40,8 @@ const io = new Server(httpServer, {
   httpCompression: false,
   cookie: false,
   serveClient: false,
-  path: '/socket.io/'
+  path: '/socket.io/',
+  connectTimeout: 30000,
 });
 
 app.use(cors({
@@ -143,6 +144,10 @@ io.on('connection', (socket) => {
           const oldPlayerId = playerInGame.id;
           playerInGame.id = socket.id;
           
+          // IMPORTANT: Clear the disconnected flag on reconnection
+          playerInGame.isDisconnected = false;
+          playerInGame.disconnectedAt = null;
+          
           // Update game manager's player-game mapping
           gameManager.playerGameMap.delete(oldPlayerId);
           gameManager.playerGameMap.set(socket.id, lobbyCode);
@@ -157,13 +162,11 @@ io.on('connection', (socket) => {
           // Add reconnection log to game
           game.addToLog(`${playerName} reconnected`, 'info');
           
-          // Notify other players
+          // Notify other players with updated state
           game.players.forEach(player => {
-            if (player.id !== socket.id) {
-              const playerSocket = io.sockets.sockets.get(player.id);
-              if (playerSocket) {
-                playerSocket.emit('gameStateUpdated', game.getStateForPlayer(player.id));
-              }
+            const playerSocket = io.sockets.sockets.get(player.id);
+            if (playerSocket) {
+              playerSocket.emit('gameStateUpdated', game.getStateForPlayer(player.id));
             }
           });
         }
@@ -480,6 +483,9 @@ io.on('connection', (socket) => {
     const sessionId = socketToSession.get(socket.id);
     socketToSession.delete(socket.id);
     
+    // Don't immediately remove session mapping - allow for reconnection
+    // sessionToSocket is kept for reconnection purposes
+    
     // Check if player is in a game - give them time to reconnect
     const gameId = gameManager.playerGameMap.get(socket.id);
     const game = gameId ? gameManager.getGame(gameId) : null;
@@ -487,7 +493,7 @@ io.on('connection', (socket) => {
     if (game) {
       const player = game.getPlayer(socket.id);
       if (player && !player.isEliminated) {
-        console.log(`⏳ Player ${player.name} disconnected from game, waiting for reconnection...`);
+        console.log(`⏳ Player ${player.name} disconnected from game (reason: ${reason}), waiting for reconnection...`);
         
         // Mark player as temporarily disconnected
         player.isDisconnected = true;
@@ -504,7 +510,7 @@ io.on('connection', (socket) => {
           }
         });
         
-        // Set a grace period for reconnection (30 seconds)
+        // Set a grace period for reconnection (60 seconds - longer for unstable connections)
         setTimeout(() => {
           // Check if player reconnected (socket ID would change but player name remains)
           const currentPlayer = game.players.find(p => p.name === player.name);
@@ -550,7 +556,7 @@ io.on('connection', (socket) => {
             
             gameManager.playerGameMap.delete(socket.id);
           }
-        }, 30000); // 30 second grace period
+        }, 60000); // 60 second grace period
         
         return; // Don't process lobby disconnect immediately
       }

@@ -90,19 +90,19 @@ export const useGameStore = create((set, get) => ({
       })
     
     const socket = io(SOCKET_URL, {
-      transports: ['polling', 'websocket'], // Polling first for reliability
+      transports: ['websocket', 'polling'], // WebSocket first, polling as fallback
       reconnection: true,
-      reconnectionAttempts: 10,
+      reconnectionAttempts: Infinity, // Keep trying to reconnect
       reconnectionDelay: 1000,
       reconnectionDelayMax: 5000,
-      timeout: 60000,
+      timeout: 30000,
       autoConnect: true,
       forceNew: false,
-      upgrade: true, // Try to upgrade to websocket after polling connects
+      upgrade: true,
       rememberUpgrade: true,
       closeOnBeforeunload: false,
-      secure: true, // Use secure connection
-      rejectUnauthorized: false, // Accept self-signed certs in dev
+      secure: true,
+      rejectUnauthorized: false,
       withCredentials: true,
       path: '/socket.io/',
     })
@@ -139,7 +139,7 @@ export const useGameStore = create((set, get) => ({
         }
       })
       
-      // Start heartbeat to keep server awake
+      // Start heartbeat to keep server awake and connection active
       const heartbeatInterval = setInterval(() => {
         if (socket.connected) {
           socket.emit('ping', { timestamp: Date.now() })
@@ -147,7 +147,7 @@ export const useGameStore = create((set, get) => ({
         } else {
           clearInterval(heartbeatInterval)
         }
-      }, 2 * 60 * 1000) // Send heartbeat every 2 minutes
+      }, 30 * 1000) // Send heartbeat every 30 seconds (more frequent)
       
       // Store interval ID for cleanup
       socket._heartbeatInterval = heartbeatInterval
@@ -186,12 +186,35 @@ export const useGameStore = create((set, get) => ({
     
     socket.on('reconnect_attempt', (attemptNumber) => {
       console.log(`🔄 Reconnection attempt ${attemptNumber}`)
-      set({ error: `Reconnecting... (Attempt ${attemptNumber})` })
+      set({ error: `Reconnecting... (Attempt ${attemptNumber})`, isLoading: true })
     })
     
     socket.on('reconnect', (attemptNumber) => {
       console.log(`✅ Reconnected after ${attemptNumber} attempts`)
-      set({ error: null, isLoading: false })
+      set({ error: null, isLoading: false, isConnected: true })
+      
+      // Re-register session after reconnect to sync game state
+      const { sessionId, playerName, avatarId, currentLobbyCode } = get()
+      if (currentLobbyCode && playerName) {
+        console.log('🔄 Re-registering session after reconnect...')
+        socket.emit('registerSession', {
+          sessionId,
+          playerName,
+          avatarId,
+          lobbyCode: currentLobbyCode
+        }, (response) => {
+          if (response.success) {
+            console.log('📋 Session re-registered after reconnect')
+            if (response.lobby) {
+              set({ lobby: response.lobby })
+            }
+            if (response.gameState) {
+              console.log('🎮 Game state restored after reconnect')
+              set({ gameState: response.gameState })
+            }
+          }
+        })
+      }
     })
     
     socket.on('reconnect_failed', () => {
