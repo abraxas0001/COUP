@@ -14,11 +14,21 @@ import {
   ChevronDown,
   Play,
   HelpCircle,
-  Crown
+  Crown,
+  X
 } from 'lucide-react'
 import { CHARACTERS, ACTIONS } from '../constants/gameConstants'
 import Logo from '../components/Logo'
 import CharacterCard from '../components/CharacterCard'
+
+// Card image paths
+const CARD_IMAGES = {
+  duke: '/cards/duke.png',
+  assassin: '/cards/assassin.png',
+  captain: '/cards/captain.png',
+  ambassador: '/cards/ambassador.png',
+  contessa: '/cards/contessa.png'
+}
 
 const sections = [
   { id: 'objective', title: 'Objective & Setup', icon: Target },
@@ -285,19 +295,68 @@ export default function HowToPlay() {
                       <motion.div
                         key={character.id}
                         whileHover={{ scale: 1.02 }}
-                        onClick={() => setExpandedCharacter(
-                          expandedCharacter === character.id ? null : character.id
-                        )}
+                        onClick={() => setExpandedCharacter(character.id)}
                         className="cursor-pointer"
                       >
                         <CharacterCard
                           character={character}
-                          isExpanded={expandedCharacter === character.id}
-                          showDetails={true}
+                          size="large"
                         />
                       </motion.div>
                     ))}
                   </div>
+                  
+                  {/* HD Card Popup Modal */}
+                  <AnimatePresence>
+                    {expandedCharacter && (
+                      <motion.div
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        exit={{ opacity: 0 }}
+                        onClick={() => setExpandedCharacter(null)}
+                        className="fixed inset-0 z-[100] flex items-center justify-center bg-black/90 backdrop-blur-xl"
+                      >
+                        <motion.div
+                          initial={{ scale: 0.5, opacity: 0 }}
+                          animate={{ scale: 1, opacity: 1 }}
+                          exit={{ scale: 0.5, opacity: 0 }}
+                          transition={{ type: 'spring', stiffness: 200, damping: 20 }}
+                          onClick={(e) => e.stopPropagation()}
+                          className="relative max-w-sm mx-4"
+                        >
+                          {/* Glow background */}
+                          <div className={`absolute -inset-8 bg-gradient-to-r ${CHARACTERS[expandedCharacter]?.gradient} opacity-30 blur-3xl rounded-3xl`} />
+                          
+                          {/* HD Card Image Container */}
+                          <div className="relative rounded-2xl overflow-hidden shadow-2xl border-2 border-coup-gold/40">
+                            <motion.img
+                              src={CARD_IMAGES[expandedCharacter]}
+                              alt={CHARACTERS[expandedCharacter]?.name}
+                              className="w-full h-auto max-h-[80vh] object-contain"
+                              initial={{ scale: 1.1 }}
+                              animate={{ scale: 1 }}
+                              transition={{ duration: 0.4 }}
+                              draggable={false}
+                            />
+                            
+                            {/* Close button */}
+                            <motion.button
+                              whileHover={{ scale: 1.15, rotate: 90 }}
+                              whileTap={{ scale: 0.85 }}
+                              onClick={() => setExpandedCharacter(null)}
+                              className="absolute top-4 right-4 w-10 h-10 bg-black/70 backdrop-blur-sm rounded-full flex items-center justify-center
+                                text-white hover:bg-black/90 transition-colors border border-white/30"
+                            >
+                              <X className="w-5 h-5" />
+                            </motion.button>
+                          </div>
+                          
+                          {/* Click anywhere to close hint */}
+                          <p className="text-center text-gray-500 text-sm mt-4">Click anywhere to close</p>
+                        </motion.div>
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
                 </div>
 
                 {/* Character Actions Quick Reference */}

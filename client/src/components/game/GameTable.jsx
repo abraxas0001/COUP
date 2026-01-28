@@ -8,11 +8,11 @@ import Treasury from './Treasury'
 
 // Card image paths
 const CARD_IMAGES = {
-  duke: '/cards/duke.svg',
-  assassin: '/cards/assassin.svg',
-  captain: '/cards/captain.svg',
-  ambassador: '/cards/ambassador.svg',
-  contessa: '/cards/contessa.svg'
+  duke: '/cards/duke.png',
+  assassin: '/cards/assassin.png',
+  captain: '/cards/captain.png',
+  ambassador: '/cards/ambassador.png',
+  contessa: '/cards/contessa.png'
 }
 
 export default function GameTable({ gameState, myId }) {

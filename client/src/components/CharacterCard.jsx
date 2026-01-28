@@ -1,13 +1,12 @@
 import { motion } from 'framer-motion'
-import { ChevronDown } from 'lucide-react'
 
 // Card image paths
 const CARD_IMAGES = {
-  duke: '/cards/duke.svg',
-  assassin: '/cards/assassin.svg',
-  captain: '/cards/captain.svg',
-  ambassador: '/cards/ambassador.svg',
-  contessa: '/cards/contessa.svg'
+  duke: '/cards/duke.png',
+  assassin: '/cards/assassin.png',
+  captain: '/cards/captain.png',
+  ambassador: '/cards/ambassador.png',
+  contessa: '/cards/contessa.png'
 }
 
 export default function CharacterCard({ 
@@ -79,50 +78,8 @@ export default function CharacterCard({
       <motion.div
         initial={{ opacity: 0 }}
         whileHover={{ opacity: 1 }}
-        className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent pointer-events-none"
+        className="absolute inset-0 bg-gradient-to-t from-black/30 via-transparent to-transparent pointer-events-none"
       />
-
-      {/* Expanded Details Overlay */}
-      {showDetails && isRevealed && (
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ 
-            opacity: isExpanded ? 1 : 0,
-            y: isExpanded ? 0 : 20
-          }}
-          transition={{ duration: 0.2 }}
-          className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black via-black/95 to-transparent p-3 pt-8"
-        >
-          {character.actionName && (
-            <div className="mb-2">
-              <p className="text-coup-gold text-xs font-semibold uppercase tracking-wider">
-                {character.actionName}
-              </p>
-              <p className="text-gray-300 text-xs leading-relaxed">
-                {character.actionDescription}
-              </p>
-            </div>
-          )}
-          {character.counteraction && (
-            <div>
-              <p className="text-blue-400 text-xs font-semibold uppercase tracking-wider">
-                Blocks
-              </p>
-              <p className="text-gray-300 text-xs">{character.counteraction}</p>
-            </div>
-          )}
-        </motion.div>
-      )}
-
-      {/* Expand indicator */}
-      {showDetails && (
-        <motion.div
-          animate={{ rotate: isExpanded ? 180 : 0 }}
-          className="absolute bottom-2 right-2 bg-black/50 rounded-full p-1"
-        >
-          <ChevronDown className="w-3 h-3 text-white/70" />
-        </motion.div>
-      )}
 
       {/* Selected checkmark */}
       {isSelected && (
