@@ -90,19 +90,17 @@ export const useGameStore = create((set, get) => ({
       })
     
     const socket = io(SOCKET_URL, {
-      transports: ['websocket', 'polling'], // WebSocket first, polling as fallback
+      transports: ['polling', 'websocket'], // Polling first - more stable on Render free tier
       reconnection: true,
-      reconnectionAttempts: Infinity, // Keep trying to reconnect
-      reconnectionDelay: 1000,
-      reconnectionDelayMax: 5000,
-      timeout: 30000,
+      reconnectionAttempts: Infinity,
+      reconnectionDelay: 500,
+      reconnectionDelayMax: 3000,
+      timeout: 20000,
       autoConnect: true,
       forceNew: false,
       upgrade: true,
-      rememberUpgrade: true,
+      rememberUpgrade: false, // Don't remember upgrade - always start with polling
       closeOnBeforeunload: false,
-      secure: true,
-      rejectUnauthorized: false,
       withCredentials: true,
       path: '/socket.io/',
     })
@@ -112,7 +110,10 @@ export const useGameStore = create((set, get) => ({
       set({ isConnected: true, error: null, isLoading: false })
       
       // Register session with server for reconnection support
-      const { sessionId, playerName, avatarId, currentLobbyCode } = get()
+      const { sessionId, playerName, avatarId, currentLobbyCode, gameState: existingGameState } = get()
+      
+      console.log('📤 Registering session...', { playerName, lobbyCode: currentLobbyCode, hasExistingGame: !!existingGameState })
+      
       socket.emit('registerSession', {
         sessionId,
         playerName,
@@ -120,7 +121,7 @@ export const useGameStore = create((set, get) => ({
         lobbyCode: currentLobbyCode
       }, (response) => {
         if (response.success) {
-          console.log('📋 Session registered')
+          console.log('📋 Session registered:', response.message)
           if (response.lobby) {
             console.log('🔄 Rejoined lobby:', response.lobby.id)
             set({ lobby: response.lobby })
@@ -135,9 +136,18 @@ export const useGameStore = create((set, get) => ({
               availableActions: response.gameState.availableActions?.length || 0
             })
             set({ gameState: response.gameState })
+          } else if (currentLobbyCode && existingGameState) {
+            // We had a game but didn't get state back - request it explicitly
+            console.log('⚠️ Had game but no state returned, requesting game state...')
+            socket.emit('requestGameState', { lobbyCode: currentLobbyCode }, (stateResponse) => {
+              if (stateResponse.success && stateResponse.gameState) {
+                console.log('🎮 Got game state via explicit request')
+                set({ gameState: stateResponse.gameState })
+              }
+            })
           }
         } else {
-          console.log('📋 Session registration:', response.message || 'No active game to rejoin')
+          console.log('📋 Session registration failed:', response.message || 'Unknown error')
           // Clear stale lobby code if game no longer exists
           if (currentLobbyCode && !response.lobby && !response.gameState) {
             localStorage.removeItem('currentLobbyCode')

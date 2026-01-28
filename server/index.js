@@ -28,11 +28,11 @@ const io = new Server(httpServer, {
     credentials: true,
     allowedHeaders: ['Content-Type', 'Authorization']
   },
-  transports: ['websocket', 'polling'], // WebSocket first for better performance
+  transports: ['polling', 'websocket'], // Polling first - more stable on Render free tier
   allowEIO3: true,
   allowEIO4: true,
-  pingTimeout: 30000,
-  pingInterval: 10000, // More frequent pings to detect disconnects faster
+  pingTimeout: 60000,
+  pingInterval: 25000,
   upgradeTimeout: 30000,
   maxHttpBufferSize: 1e6,
   allowUpgrades: true,
@@ -41,7 +41,7 @@ const io = new Server(httpServer, {
   cookie: false,
   serveClient: false,
   path: '/socket.io/',
-  connectTimeout: 30000,
+  connectTimeout: 45000,
 });
 
 app.use(cors({
@@ -118,7 +118,7 @@ io.on('connection', (socket) => {
   // ========================
   
   socket.on('registerSession', ({ sessionId, playerName, avatarId, lobbyCode }, callback) => {
-    console.log(`📋 Session registration: ${sessionId} (socket: ${socket.id})`);
+    console.log(`📋 Session registration: ${sessionId} (socket: ${socket.id}), playerName: ${playerName}, lobbyCode: ${lobbyCode}`);
     
     // Check if this session was previously connected with a different socket
     const oldSocketId = sessionToSocket.get(sessionId);
@@ -131,9 +131,11 @@ io.on('connection', (socket) => {
     
     // Try to restore game state if there's a lobby code
     if (lobbyCode && playerName) {
+      console.log(`   Looking for game: ${lobbyCode}`);
       const game = gameManager.getGame(lobbyCode);
       
       if (game) {
+        console.log(`   Game found! Players: ${game.players.map(p => p.name).join(', ')}`);
         // Find the player in the game by name (since socket.id changed)
         const playerInGame = game.players.find(p => p.name === playerName);
         
@@ -452,6 +454,39 @@ io.on('connection', (socket) => {
       }
       
       callback(result);
+    } catch (error) {
+      callback({ success: false, error: error.message });
+    }
+  });
+
+  // ========================
+  // REQUEST GAME STATE (explicit request for reconnection)
+  // ========================
+  
+  socket.on('requestGameState', ({ lobbyCode }, callback) => {
+    try {
+      const game = gameManager.getGame(lobbyCode);
+      if (!game) {
+        return callback({ success: false, error: 'Game not found' });
+      }
+      
+      // Check if this socket is a player in the game
+      const player = game.getPlayer(socket.id);
+      if (!player) {
+        // Try to find by checking playerGameMap
+        const mappedLobby = gameManager.playerGameMap.get(socket.id);
+        if (mappedLobby !== lobbyCode) {
+          return callback({ success: false, error: 'Player not in this game' });
+        }
+      }
+      
+      console.log(`📊 Explicit game state request from ${socket.id} for ${lobbyCode}`);
+      
+      // Make sure socket is in the room
+      socket.join(lobbyCode);
+      
+      const gameState = game.getStateForPlayer(socket.id);
+      callback({ success: true, gameState });
     } catch (error) {
       callback({ success: false, error: error.message });
     }
