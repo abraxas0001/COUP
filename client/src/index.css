@@ -195,6 +195,11 @@ body {
   animation: scaleIn 0.3s ease-out forwards;
 }
 
+/* Radial gradient for winner modal */
+.bg-gradient-radial {
+  background: radial-gradient(circle at center, var(--tw-gradient-from) 0%, var(--tw-gradient-via) 50%, var(--tw-gradient-to) 100%);
+}
+
 /* Particle background effect */
 .particles {
   position: fixed;
