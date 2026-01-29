@@ -227,7 +227,13 @@ export default function Home() {
             <label className="block text-sm text-gray-400 mb-2">Choose Your Avatar</label>
             <AvatarSelector
               selectedId={avatarId}
-              onSelect={setAvatarId}
+              onSelect={(id, name) => {
+                setAvatarId(id)
+                // Auto-fill name if empty or if it matches another avatar name
+                if (!tempName.trim() || Object.values(avatarNames).includes(tempName)) {
+                  setTempName(name)
+                }
+              }}
             />
           </div>
 

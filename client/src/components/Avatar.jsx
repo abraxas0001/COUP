@@ -8,6 +8,7 @@ const AVATAR_IMAGES = {
   4: '/avatars/Red%20Hair%20Baddie.jpeg',
   5: '/avatars/Supreme%20MadDog.png',
   6: '/avatars/Ultimate%20Bhatura.png',
+  7: '/avatars/Abra.jpg',
 }
 
 // Avatar names for display (extracted from filenames)
@@ -18,6 +19,7 @@ const AVATAR_NAMES = {
   4: 'Red Hair Baddie',
   5: 'Supreme MadDog',
   6: 'Ultimate Bhatura',
+  7: 'Abra',
 }
 
 // Border colors for each avatar
@@ -28,6 +30,7 @@ const AVATAR_COLORS = {
   4: 'border-emerald-500 shadow-emerald-500/30',
   5: 'border-rose-500 shadow-rose-500/30',
   6: 'border-amber-500 shadow-amber-500/30',
+  7: 'border-blue-500 shadow-blue-500/30',
 }
 
 const sizes = {
