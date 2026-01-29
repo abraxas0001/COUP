@@ -229,10 +229,7 @@ export default function Home() {
               selectedId={avatarId}
               onSelect={(id, name) => {
                 setAvatarId(id)
-                // Auto-fill name if empty or if it matches another avatar name
-                if (!tempName.trim() || Object.values(avatarNames).includes(tempName)) {
-                  setTempName(name)
-                }
+                setTempName(name)
               }}
             />
           </div>
@@ -304,10 +301,7 @@ export default function Home() {
               selectedId={avatarId}
               onSelect={(id, name) => {
                 setAvatarId(id)
-                // Auto-fill name if empty or if it matches another avatar name
-                if (!tempName.trim() || Object.values(avatarNames).includes(tempName)) {
-                  setTempName(name)
-                }
+                setTempName(name)
               }}
             />
           </div>
