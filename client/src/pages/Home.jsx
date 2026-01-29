@@ -37,6 +37,7 @@ export default function Home() {
     if (pendingLobbyCode) {
       setLobbyCode(pendingLobbyCode)
       setShowJoinModal(true)
+      // Do NOT auto-join, just show the modal for avatar/name selection
       localStorage.removeItem('pendingLobbyCode')
     }
   }, [])
