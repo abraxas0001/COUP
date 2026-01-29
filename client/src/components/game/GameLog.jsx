@@ -43,7 +43,7 @@ export default function GameLog({ logs = [] }) {
   }, [logs.length])
 
   return (
-    <div className="h-full max-h-[calc(100vh-200px)] flex flex-col bg-coup-darker">
+    <div className="h-full flex flex-col bg-coup-darker overflow-hidden">
       {/* Header */}
       <div className="p-4 border-b border-coup-gray-light flex-shrink-0">
         <h3 className="font-display text-coup-gold flex items-center gap-2">

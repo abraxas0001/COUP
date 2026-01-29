@@ -112,7 +112,7 @@ export default function Game() {
   const isMyTurn = gameState.isYourTurn
 
   return (
-    <div className="min-h-screen bg-coup-dark game-table table-spotlight flex flex-col overflow-hidden relative">
+    <div className="h-screen bg-coup-dark game-table table-spotlight flex flex-col overflow-hidden relative">
       {/* Background music player */}
       <MusicPlayer />
       {/* Animated background particles */}
@@ -128,9 +128,9 @@ export default function Game() {
       <PhaseIndicator gameState={gameState} />
 
       {/* Main Game Area */}
-      <div className="flex-1 flex">
+      <div className="flex-1 flex min-h-0 overflow-hidden">
         {/* Game Table (Center) */}
-        <div className="flex-1 flex flex-col p-4">
+        <div className="flex-1 flex flex-col p-4 overflow-hidden">
           <GameTable 
             gameState={gameState} 
             myId={myId}
@@ -138,13 +138,13 @@ export default function Game() {
         </div>
 
         {/* Game Log (Right Sidebar) */}
-        <div className="w-80 hidden lg:block border-l border-coup-gray-light">
+        <div className="w-80 hidden lg:block border-l border-coup-gray-light overflow-hidden">
           <GameLog logs={gameState.gameLog} />
         </div>
       </div>
 
       {/* Bottom Panel */}
-      <div className="border-t border-coup-gray-light bg-coup-darker/80 backdrop-blur-sm">
+      <div className="flex-shrink-0 border-t border-coup-gray-light bg-coup-darker/80 backdrop-blur-sm">
         <div className="max-w-7xl mx-auto p-4">
           <div className="flex items-end gap-6">
             {/* Player Hand */}
