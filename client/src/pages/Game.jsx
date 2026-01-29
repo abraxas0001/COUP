@@ -194,6 +194,7 @@ export default function Game() {
             winner={gameState.winner}
             myId={myId}
             onLeave={handleLeave}
+            players={gameState.players}
           />
         )}
       </AnimatePresence>

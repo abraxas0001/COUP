@@ -38,6 +38,7 @@ export default function Home() {
       setLobbyCode(pendingLobbyCode)
       setShowJoinModal(true)
       // Do NOT auto-join, just show the modal for avatar/name selection
+      // User must click Join Party to actually join
       localStorage.removeItem('pendingLobbyCode')
     }
   }, [])

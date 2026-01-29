@@ -4,9 +4,19 @@ import confetti from '../../utils/confetti'
 import { useEffect, useState } from 'react'
 import { AVATAR_IMAGES } from '../Avatar'
 
-export default function GameOverModal({ winner, myId, onLeave }) {
+export default function GameOverModal({ winner, myId, onLeave, players }) {
   const isWinner = winner?.id === myId
   const [showContent, setShowContent] = useState(false)
+
+  // Find the winner in the players list to get the correct avatarId
+  let winnerAvatarId = winner?.avatarId
+  if (players && winner) {
+    const found = players.find(
+      p => p.id === winner.id || p.name === winner.name
+    )
+    if (found && found.avatarId) winnerAvatarId = found.avatarId
+  }
+  const winnerAvatarPath = AVATAR_IMAGES[winnerAvatarId] || AVATAR_IMAGES[1]
 
   useEffect(() => {
     // Trigger confetti for everyone (but more for the winner)
@@ -19,8 +29,6 @@ export default function GameOverModal({ winner, myId, onLeave }) {
     }
     setTimeout(() => setShowContent(true), 300)
   }, [isWinner])
-
-  const winnerAvatarPath = AVATAR_IMAGES[winner?.avatarId] || AVATAR_IMAGES[1]
 
   return (
     <motion.div
