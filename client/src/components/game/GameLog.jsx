@@ -43,9 +43,9 @@ export default function GameLog({ logs = [] }) {
   }, [logs.length])
 
   return (
-    <div className="h-full flex flex-col bg-coup-darker">
+    <div className="h-full max-h-[calc(100vh-200px)] flex flex-col bg-coup-darker">
       {/* Header */}
-      <div className="p-4 border-b border-coup-gray-light">
+      <div className="p-4 border-b border-coup-gray-light flex-shrink-0">
         <h3 className="font-display text-coup-gold flex items-center gap-2">
           <Info className="w-5 h-5" />
           Game Log
@@ -55,7 +55,7 @@ export default function GameLog({ logs = [] }) {
       {/* Log entries */}
       <div 
         ref={scrollRef}
-        className="flex-1 overflow-y-auto p-4 space-y-2"
+        className="flex-1 overflow-y-auto p-4 space-y-2 scrollbar-thin scrollbar-thumb-coup-gray-light scrollbar-track-coup-darker"
       >
         {logs.map((log, index) => {
           const Icon = LOG_ICONS[log.type] || Info
