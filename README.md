@@ -112,9 +112,9 @@ coup/
 │       ├── Game.js           # Core game state machine
 │       ├── GameManager.js    # Manages multiple games
 │       └── LobbyManager.js   # Handles party/lobby logic
-│
-├── client/                    # Frontend React application
-│   ├── public/
+
+**Alternate Client**: https://coup-multi.vercel.app
+**Render Link**: [add your Render deployment link here]
 │   │   └── cards/            # Character card SVGs
 │   ├── src/
 │   │   ├── components/
